@@ -4,7 +4,7 @@ This is a simple implementation of a circle menu to be used in Android applicati
 
 Screenshots
 -----------
-[![Circle menu screenshot](https://github.com/szugyi/CircleMenu/blob/master/screenshots/shot1.png)](#Screenshot)
+[![Circle menu screenshot](https://github.com/szugyi/CircleMenu/raw/master/screenshots/shot1.png)](#Screenshot)
 
 Basic usage
 -----------
