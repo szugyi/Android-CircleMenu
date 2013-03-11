@@ -8,4 +8,16 @@ Screenshots
 
 Basic usage
 -----------
-To use the menu you will need the CircleLayout.java and CircleImageView.java from the package com.szugyi.circlemenu.view and the custom attributes defined in the /res/values/attrs.xml file. You can copy and paste them into your project, or make a library project of this one, by selecting the Properties menu from the context menu of the project folder, then selecting Android and checking in the Is Library checkbox. Do not forget to reference this project as a library project if you choose the second way to use the files.
+The files you will need: 
+	/src/com/szugyi/circlemenu/view/CircleLayout.java
+	/src/com/szugyi/circlemenu/view/CircleImageView.java
+	/res/values/attrs.xml
+	
+ You can copy and paste them into your project, or make a library project of this one, by selecting the Properties menu from the context menu of the project folder, then selecting Android and checking in the Is Library checkbox. Do not forget to reference this project as a library project if you choose the second way to use the files.
+	
+
+Credits
+-------
+Special thanks to Balázs Varga, who helped me during the first implementations of this custom view.
+
+The icons used in the example app are from: http://icons.mysitemyway.com/blue-white-pearls-icons-social-media-logos/
