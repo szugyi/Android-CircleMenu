@@ -1,7 +1,7 @@
 package com.szugyi.circlemenu.view;
 
 /*
- * Copyright 2011 Google Inc.
+ * Copyright 2013 Csaba Szugyiczki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,53 +31,79 @@ import android.view.ViewGroup;
 
 import com.szugyi.circlemenu.R;
 
+/**
+ * 
+ * @author Szugyi
+ * Creates a rotatable circle menu which can be parameterized by custom attributes.
+ * Handles touches and gestures to make the menu rotatable, and to make the 
+ * menu items selectable and clickable.
+ * 
+ */
 public class CircleLayout extends ViewGroup {
-	private GestureDetector mGestureDetector;
+	// Event listeners
 	private OnItemClickListener mOnItemClickListener = null;
 	private OnItemSelectedListener mOnItemSelectedListener = null;
 	private OnCenterClickListener mOnCenterClickListener = null;
-
-	private int mTappedViewsPostition = -1;
-	private View mTappedView = null;
-
-	private int selected = 0;
-
-	private int mMaxChildWidth = 0;
-	private int mMaxChildHeight = 0;
-
-	private int childWidth = 0;
-	private int childHeight = 0;
-
-	private int radius = 0;
-
+	
+	// Background image
 	private Bitmap imageOriginal, imageScaled;
 	private Matrix matrix;
 
-	private int circleWidth, circleHeight;
+	private int mTappedViewsPostition = -1;
+	private View mTappedView = null;
+	private int selected = 0;
 
+	// Child sizes
+	private int mMaxChildWidth = 0;
+	private int mMaxChildHeight = 0;
+	private int childWidth = 0;
+	private int childHeight = 0;
+
+	// Sizes of the ViewGroup
+	private int circleWidth, circleHeight;
+	private int radius = 0;
+
+	// Touch detection
+	private GestureDetector mGestureDetector;
 	// needed for detecting the inversed rotations
 	private boolean[] quadrantTouched;
 
+	// Settings of the ViewGroup
 	private boolean allowRotating = true;
-
 	private float angle = 90;
 	private float firstChildPos = 90;
 	private boolean rotateToCenter = true;
 	private boolean isRotating = true;
 
+	/**
+	 * @param context
+	 */
 	public CircleLayout(Context context) {
 		this(context, null);
 	}
 
+	/**
+	 * @param context
+	 * @param attrs
+	 */
 	public CircleLayout(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
-
+	
+	/**
+	 * @param context
+	 * @param attrs
+	 * @param defStyle
+	 */
 	public CircleLayout(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		init(attrs);
 	}
 
+	/**
+	 * Initializes the ViewGroup and modifies it's default behavior by the passed attributes
+	 * @param attrs	the attributes used to modify default settings
+	 */
 	protected void init(AttributeSet attrs) {
 		mGestureDetector = new GestureDetector(getContext(),
 				new MyGestureListener());
@@ -86,22 +112,27 @@ public class CircleLayout extends ViewGroup {
 		if (attrs != null) {
 			TypedArray a = getContext().obtainStyledAttributes(attrs,
 					R.styleable.Circle);
-
+			
+			// The angle where the first menu item will be drawn
 			angle = a.getInt(R.styleable.Circle_firstChildPosition, 90);
 			firstChildPos = angle;
 
 			rotateToCenter = a.getBoolean(R.styleable.Circle_rotateToCenter,
-					true);
+					true);			
 			isRotating = a.getBoolean(R.styleable.Circle_isRotating, true);
+			
+			// If the menu is not rotating then it does not have to be centered
+			// since it cannot be even moved
 			if (!isRotating) {
 				rotateToCenter = false;
 			}
 
 			if (imageOriginal == null) {
-				// Attribútumban beállított háttér id-jének kiszedése
 				int picId = a.getResourceId(
 						R.styleable.Circle_circleBackground, -1);
-
+				
+				// If a background image was set as an attribute, 
+				// retrieve the image
 				if (picId != -1) {
 					imageOriginal = BitmapFactory.decodeResource(
 							getResources(), picId);
@@ -118,23 +149,27 @@ public class CircleLayout extends ViewGroup {
 				// restore the old state
 				matrix.reset();
 			}
-			// azért kell, hogy kirajzolódjon
+			// Needed for the ViewGroup to be drawn
 			setWillNotDraw(false);
 		}
 	}
 
+	/**
+	 * Returns the currently selected menu
+	 * @return the view which is currently the closest to the start position
+	 */
 	public View getSelectedItem() {
 		return (selected >= 0) ? getChildAt(selected) : null;
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-		// az elem méretei
+		// the sizes of the ViewGroup
 		circleHeight = getHeight();
 		circleWidth = getWidth();
 
 		if (imageOriginal != null) {
-			// háttérben lévő kép átméretezése
+			// Scaling the size of the background image
 			if (imageScaled == null) {
 				matrix = new Matrix();
 				float sx = (((radius + childWidth / 4) * 2) / (float) imageOriginal
@@ -148,7 +183,7 @@ public class CircleLayout extends ViewGroup {
 			}
 
 			if (imageScaled != null) {
-				// kép betolása középre
+				// Move the background to the center
 				int cx = (circleWidth - imageScaled.getWidth()) / 2;
 				int cy = (circleHeight - imageScaled.getHeight()) / 2;
 
@@ -209,14 +244,17 @@ public class CircleLayout extends ViewGroup {
 		int layoutWidth = r - l;
 		int layoutHeight = b - t;
 
-		// Elemek felrakása
+		// Laying out the child views
 		final int childCount = getChildCount();
 		int left, top;
 		radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
 				: layoutHeight / 3;
+		
 		childWidth = (int) (radius / 1.5);
 		childHeight = (int) (radius / 1.5);
+		
 		float angleDelay = 360 / getChildCount();
+		
 		for (int i = 0; i < childCount; i++) {
 			final CircleImageView child = (CircleImageView) getChildAt(i);
 			if (child.getVisibility() == GONE) {
@@ -249,13 +287,13 @@ public class CircleLayout extends ViewGroup {
 	/**
 	 * Rotate the buttons.
 	 * 
-	 * @param degrees
-	 *            The degrees, the dialer should get rotated.
+	 * @param degrees The degrees, the menu items should get rotated.
 	 */
 	private void rotateButtons(float degrees) {
 		int left, top, childCount = getChildCount();
 		float angleDelay = 360 / childCount;
 		angle += degrees;
+		
 		if (angle > 360) {
 			angle -= 360;
 		} else {
@@ -463,6 +501,12 @@ public class CircleLayout extends ViewGroup {
 		}
 	}
 
+	/**
+	 * Rotates the given view to the center of the menu.
+	 * @param view			the view to be rotated to the center
+	 * @param fromRunnable	if the method is called from the runnable which animates the rotation
+	 * 						then it should be true, otherwise false 
+	 */
 	private void rotateViewToCenter(CircleImageView view, boolean fromRunnable) {
 		if (rotateToCenter) {
 			float velocityTemp = 1;
@@ -490,7 +534,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	/**
-	 * A {@link Runnable} for animating the the dialer's fling.
+	 * A {@link Runnable} for animating the menu rotation.
 	 */
 	private class FlingRunnable implements Runnable {
 

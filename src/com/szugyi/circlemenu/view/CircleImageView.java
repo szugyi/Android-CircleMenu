@@ -1,7 +1,7 @@
 package com.szugyi.circlemenu.view;
 
 /*
- * Copyright 2011 Google Inc.
+ * Copyright 2013 Csaba Szugyiczki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,13 @@ import android.widget.ImageView;
 
 import com.szugyi.circlemenu.R;
 
+/**
+ * 
+ * @author Szugyi
+ * Custom ImageView for the CircleLayout class.
+ * Makes it possible for the image to have an angle, position and a name.
+ * Angle is used for the positioning in the circle menu.
+ */
 public class CircleImageView extends ImageView {
 
 	private float angle = 0;

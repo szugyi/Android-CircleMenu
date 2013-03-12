@@ -21,4 +21,7 @@ Credits
 -------
 Special thanks to Balázs Varga, who helped me during the first implementations of this custom view.
 
+A lot of code snippets have been used from this great tutorial:
+http://mobile.tutsplus.com/tutorials/android/android-sdk-creating-a-rotating-dialer/
+
 The icons used in the example app are from: http://icons.mysitemyway.com/blue-white-pearls-icons-social-media-logos/
