@@ -46,11 +46,53 @@ public class MainActivity extends Activity implements OnItemSelectedListener, On
 	@Override
 	public void onItemSelected(View view, int position, long id, String name) {		
 		selectedTextView.setText(name);
+		
+		switch (view.getId()) {
+			case R.id.main_facebook_image:
+				// Handle facebook selection		
+				break;
+			case R.id.main_google_image:
+				// Handle google selection	
+				break;
+			case R.id.main_linkedin_image:
+				// Handle linkedin selection		
+				break;
+			case R.id.main_myspace_image:
+				// Handle myspace selection		
+				break;
+			case R.id.main_twitter_image:
+				// Handle twitter selection		
+				break;
+			case R.id.main_wordpress_image:
+				// Handle wordpress selection		
+				break;
+		}
 	}
 
 	@Override
 	public void onItemClick(View view, int position, long id, String name) {
 		Toast.makeText(getApplicationContext(), getResources().getString(R.string.start_app) + " " + name, Toast.LENGTH_SHORT).show();
+		
+		switch (view.getId()) {
+			case R.id.main_facebook_image:
+				// Handle facebook click		
+				break;
+			case R.id.main_google_image:
+				// Handle google click		
+				break;
+			case R.id.main_linkedin_image:
+				// Handle linkedin click		
+				break;
+			case R.id.main_myspace_image:
+				// Handle myspace click		
+				break;
+			case R.id.main_twitter_image:
+				// Handle twitter click		
+				break;
+			case R.id.main_wordpress_image:
+				// Handle wordpress click		
+				break;
+		}
 	}
 
 }
