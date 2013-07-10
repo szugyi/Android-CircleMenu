@@ -26,6 +26,7 @@
         </attr>
         <attr name="rotateToCenter" format="boolean" />
         <attr name="isRotating" format="boolean" />
+        <attr name="speed" format="integer" />
     </declare-styleable>
     <declare-styleable name="CircleImageView">
         <attr name="name" format="string" />

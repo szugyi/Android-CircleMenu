@@ -33,10 +33,9 @@ import com.szugyi.circlemenu.R;
 
 /**
  * 
- * @author Szugyi
- * Creates a rotatable circle menu which can be parameterized by custom attributes.
- * Handles touches and gestures to make the menu rotatable, and to make the 
- * menu items selectable and clickable.
+ * @author Szugyi Creates a rotatable circle menu which can be parameterized by
+ *         custom attributes. Handles touches and gestures to make the menu
+ *         rotatable, and to make the menu items selectable and clickable.
  * 
  */
 public class CircleLayout extends ViewGroup {
@@ -44,7 +43,8 @@ public class CircleLayout extends ViewGroup {
 	private OnItemClickListener mOnItemClickListener = null;
 	private OnItemSelectedListener mOnItemSelectedListener = null;
 	private OnCenterClickListener mOnCenterClickListener = null;
-	
+	private OnRotationFinishedListener mOnRotationFinishedListener = null;
+
 	// Background image
 	private Bitmap imageOriginal, imageScaled;
 	private Matrix matrix;
@@ -74,6 +74,8 @@ public class CircleLayout extends ViewGroup {
 	private float firstChildPos = 90;
 	private boolean rotateToCenter = true;
 	private boolean isRotating = true;
+	private int speed = 75;
+	private float deceleration = 1 + (5f / speed);
 
 	/**
 	 * @param context
@@ -89,7 +91,7 @@ public class CircleLayout extends ViewGroup {
 	public CircleLayout(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
-	
+
 	/**
 	 * @param context
 	 * @param attrs
@@ -101,8 +103,11 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	/**
-	 * Initializes the ViewGroup and modifies it's default behavior by the passed attributes
-	 * @param attrs	the attributes used to modify default settings
+	 * Initializes the ViewGroup and modifies it's default behavior by the
+	 * passed attributes
+	 * 
+	 * @param attrs
+	 *            the attributes used to modify default settings
 	 */
 	protected void init(AttributeSet attrs) {
 		mGestureDetector = new GestureDetector(getContext(),
@@ -112,15 +117,17 @@ public class CircleLayout extends ViewGroup {
 		if (attrs != null) {
 			TypedArray a = getContext().obtainStyledAttributes(attrs,
 					R.styleable.Circle);
-			
+
 			// The angle where the first menu item will be drawn
 			angle = a.getInt(R.styleable.Circle_firstChildPosition, 90);
 			firstChildPos = angle;
 
 			rotateToCenter = a.getBoolean(R.styleable.Circle_rotateToCenter,
-					true);			
+					true);
 			isRotating = a.getBoolean(R.styleable.Circle_isRotating, true);
-			
+			speed = a.getInt(R.styleable.Circle_speed, 75);
+			deceleration = 1 + (5f / speed);
+
 			// If the menu is not rotating then it does not have to be centered
 			// since it cannot be even moved
 			if (!isRotating) {
@@ -130,8 +137,8 @@ public class CircleLayout extends ViewGroup {
 			if (imageOriginal == null) {
 				int picId = a.getResourceId(
 						R.styleable.Circle_circleBackground, -1);
-				
-				// If a background image was set as an attribute, 
+
+				// If a background image was set as an attribute,
 				// retrieve the image
 				if (picId != -1) {
 					imageOriginal = BitmapFactory.decodeResource(
@@ -149,6 +156,7 @@ public class CircleLayout extends ViewGroup {
 				// restore the old state
 				matrix.reset();
 			}
+
 			// Needed for the ViewGroup to be drawn
 			setWillNotDraw(false);
 		}
@@ -156,6 +164,7 @@ public class CircleLayout extends ViewGroup {
 
 	/**
 	 * Returns the currently selected menu
+	 * 
 	 * @return the view which is currently the closest to the start position
 	 */
 	public View getSelectedItem() {
@@ -249,12 +258,12 @@ public class CircleLayout extends ViewGroup {
 		int left, top;
 		radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
 				: layoutHeight / 3;
-		
+
 		childWidth = (int) (radius / 1.5);
 		childHeight = (int) (radius / 1.5);
-		
+
 		float angleDelay = 360 / getChildCount();
-		
+
 		for (int i = 0; i < childCount; i++) {
 			final CircleImageView child = (CircleImageView) getChildAt(i);
 			if (child.getVisibility() == GONE) {
@@ -287,13 +296,14 @@ public class CircleLayout extends ViewGroup {
 	/**
 	 * Rotate the buttons.
 	 * 
-	 * @param degrees The degrees, the menu items should get rotated.
+	 * @param degrees
+	 *            The degrees, the menu items should get rotated.
 	 */
 	private void rotateButtons(float degrees) {
 		int left, top, childCount = getChildCount();
 		float angleDelay = 360 / childCount;
 		angle += degrees;
-		
+
 		if (angle > 360) {
 			angle -= 360;
 		} else {
@@ -329,8 +339,8 @@ public class CircleLayout extends ViewGroup {
 				selected = child.getPosition();
 
 				if (mOnItemSelectedListener != null && rotateToCenter) {
-					mOnItemSelectedListener.onItemSelected(child, selected,
-							child.getId(), child.getName());
+					mOnItemSelectedListener.onItemSelected(child,
+							child.getName());
 				}
 			}
 
@@ -347,19 +357,19 @@ public class CircleLayout extends ViewGroup {
 		double y = circleHeight - yTouch - (circleHeight / 2d);
 
 		switch (getQuadrant(x, y)) {
-		case 1:
-			return Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
+			case 1:
+				return Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
 
-		case 2:
-		case 3:
-			return 180 - (Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI);
+			case 2:
+			case 3:
+				return 180 - (Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI);
 
-		case 4:
-			return 360 + Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
+			case 4:
+				return 360 + Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
 
-		default:
-			// ignore, does not happen
-			return 0;
+			default:
+				// ignore, does not happen
+				return 0;
 		}
 	}
 
@@ -381,27 +391,29 @@ public class CircleLayout extends ViewGroup {
 		if (isEnabled()) {
 			if (isRotating) {
 				switch (event.getAction()) {
-				case MotionEvent.ACTION_DOWN:
+					case MotionEvent.ACTION_DOWN:
 
-					// reset the touched quadrants
-					for (int i = 0; i < quadrantTouched.length; i++) {
-						quadrantTouched[i] = false;
-					}
+						// reset the touched quadrants
+						for (int i = 0; i < quadrantTouched.length; i++) {
+							quadrantTouched[i] = false;
+						}
 
-					allowRotating = false;
+						allowRotating = false;
 
-					startAngle = getAngle(event.getX(), event.getY());
-					break;
-				case MotionEvent.ACTION_MOVE:
-					double currentAngle = getAngle(event.getX(), event.getY());
-					rotateButtons((float) (startAngle - currentAngle));
-					startAngle = currentAngle;
-					break;
-				case MotionEvent.ACTION_UP:
-					allowRotating = true;
-					rotateViewToCenter((CircleImageView) getChildAt(selected),
-							false);
-					break;
+						startAngle = getAngle(event.getX(), event.getY());
+						break;
+					case MotionEvent.ACTION_MOVE:
+						double currentAngle = getAngle(event.getX(),
+								event.getY());
+						rotateButtons((float) (startAngle - currentAngle));
+						startAngle = currentAngle;
+						break;
+					case MotionEvent.ACTION_UP:
+						allowRotating = true;
+						rotateViewToCenter(
+								(CircleImageView) getChildAt(selected), false,
+								true, true);
+						break;
 				}
 			}
 
@@ -475,24 +487,24 @@ public class CircleLayout extends ViewGroup {
 			if (mTappedView != null) {
 				CircleImageView view = (CircleImageView) (mTappedView);
 				if (selected != mTappedViewsPostition) {
-					rotateViewToCenter(view, false);
+					rotateViewToCenter(view, false, true, false);
 					if (!rotateToCenter) {
 						if (mOnItemSelectedListener != null) {
 							mOnItemSelectedListener.onItemSelected(mTappedView,
-									mTappedViewsPostition, mTappedView.getId(), view.getName());
+									view.getName());
 						}
 
 						if (mOnItemClickListener != null) {
 							mOnItemClickListener.onItemClick(mTappedView,
-									mTappedViewsPostition, mTappedView.getId(), view.getName());
+									view.getName());
 						}
 					}
 				} else {
-					rotateViewToCenter(view, false);
+					rotateViewToCenter(view, false, true, false);
 
 					if (mOnItemClickListener != null) {
 						mOnItemClickListener.onItemClick(mTappedView,
-								mTappedViewsPostition, mTappedView.getId(), view.getName());
+								view.getName());
 					}
 				}
 				return true;
@@ -503,11 +515,15 @@ public class CircleLayout extends ViewGroup {
 
 	/**
 	 * Rotates the given view to the center of the menu.
-	 * @param view			the view to be rotated to the center
-	 * @param fromRunnable	if the method is called from the runnable which animates the rotation
-	 * 						then it should be true, otherwise false 
+	 * 
+	 * @param view
+	 *            the view to be rotated to the center
+	 * @param fromRunnable
+	 *            if the method is called from the runnable which animates the
+	 *            rotation then it should be true, otherwise false
 	 */
-	private void rotateViewToCenter(CircleImageView view, boolean fromRunnable) {
+	private void rotateViewToCenter(CircleImageView view, boolean fromRunnable,
+			boolean fromTap, boolean afterMoving) {
 		if (rotateToCenter) {
 			float velocityTemp = 1;
 			float destAngle = (float) (firstChildPos - view.getAngle());
@@ -524,12 +540,24 @@ public class CircleLayout extends ViewGroup {
 			}
 
 			while (startAngle < destAngle) {
-				startAngle += velocityTemp / 75;
-				velocityTemp *= 1.0666F;
+				velocityTemp *= deceleration;
+				startAngle += velocityTemp / speed;
 			}
 
+			// if (!(Math.abs(startAngle - destAngle) < 0.8 && fromTap)) {
 			CircleLayout.this.post(new FlingRunnable(reverser * velocityTemp,
 					!fromRunnable));
+			// } else {
+			// if (afterMoving) {
+			// if (CircleLayout.this.mOnRotationFinishedListener != null) {
+			// CircleImageView selectedView = (CircleImageView)
+			// getChildAt(selected);
+			// CircleLayout.this.mOnRotationFinishedListener
+			// .onRotationFinished(selectedView,
+			// selectedView.getName());
+			// }
+			// }
+			// }
 		}
 	}
 
@@ -553,27 +581,39 @@ public class CircleLayout extends ViewGroup {
 		}
 
 		public void run() {
-			if (Math.abs(velocity) > 5 && allowRotating) {
-				if (rotateToCenter) {
-					if (!(Math.abs(velocity) < 200 && (Math.abs(angle
-							- firstChildPos)
-							% angleDelay < 2))) {
-						rotateButtons(velocity / 75);
-						velocity /= 1.0666F;
+			if (allowRotating) {
+				if (Math.abs(velocity) > 5) {
+					if (rotateToCenter) {
+						if (!(Math.abs(velocity) < 200 && (Math.abs(angle
+								- firstChildPos)
+								% angleDelay < 2))) {
+							rotateButtons(velocity / speed);
+							velocity /= deceleration;
+
+							CircleLayout.this.post(this);
+						} else {
+							// if (CircleLayout.this.mOnRotationFinishedListener
+							// != null) {
+							// CircleImageView view = (CircleImageView)
+							// getChildAt(selected);
+							// CircleLayout.this.mOnRotationFinishedListener
+							// .onRotationFinished(view,
+							// view.getName());
+							// }
+						}
+					} else {
+						rotateButtons(velocity / speed);
+						velocity /= deceleration;
 
 						CircleLayout.this.post(this);
 					}
 				} else {
-					rotateButtons(velocity / 75);
-					velocity /= 1.0666F;
-
-					CircleLayout.this.post(this);
-				}
-			} else {
-				if (isFirstForwarding) {
-					isFirstForwarding = false;
-					CircleLayout.this.rotateViewToCenter(
-							(CircleImageView) getChildAt(selected), true);
+					if (isFirstForwarding) {
+						isFirstForwarding = false;
+						CircleLayout.this.rotateViewToCenter(
+								(CircleImageView) getChildAt(selected), true,
+								false, false);
+					}
 				}
 			}
 		}
@@ -598,7 +638,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	public interface OnItemClickListener {
-		void onItemClick(View view, int position, long id, String name);
+		void onItemClick(View view, String name);
 	}
 
 	public void setOnItemSelectedListener(
@@ -607,7 +647,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	public interface OnItemSelectedListener {
-		void onItemSelected(View view, int position, long id, String name);
+		void onItemSelected(View view, String name);
 	}
 
 	public interface OnCenterClickListener {
@@ -617,5 +657,14 @@ public class CircleLayout extends ViewGroup {
 	public void setOnCenterClickListener(
 			OnCenterClickListener onCenterClickListener) {
 		this.mOnCenterClickListener = onCenterClickListener;
+	}
+
+	public void setOnRotationFinishedListener(
+			OnRotationFinishedListener onRotationFinishedListener) {
+		this.mOnRotationFinishedListener = onRotationFinishedListener;
+	}
+
+	public interface OnRotationFinishedListener {
+		void onRotationFinished(View view, String name);
 	}
 }

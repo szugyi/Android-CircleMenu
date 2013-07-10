@@ -33,7 +33,7 @@ public class CircleImageView extends ImageView {
 
 	// Angle is used for the positioning on the circle
 	private float angle = 0;
-	// Position represents the position of the view in the viewgroups childrens
+	// Position represents the index of this view in the viewgroups children array
 	private int position = 0;
 	// The name of the view
 	private String name;

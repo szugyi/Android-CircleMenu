@@ -28,7 +28,8 @@
         android:layout_gravity="center_horizontal"
         circle:firstChildPosition="South" 
         circle:rotateToCenter="true" 
-        circle:isRotating="true" >       
+        circle:isRotating="true"
+        circle:speed="75" >       
 <!--         circle:circleBackground="@drawable/green"  > -->
 
 

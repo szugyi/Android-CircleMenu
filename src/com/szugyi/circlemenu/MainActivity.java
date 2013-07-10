@@ -26,73 +26,86 @@ import com.szugyi.circlemenu.view.CircleImageView;
 import com.szugyi.circlemenu.view.CircleLayout;
 import com.szugyi.circlemenu.view.CircleLayout.OnItemClickListener;
 import com.szugyi.circlemenu.view.CircleLayout.OnItemSelectedListener;
+import com.szugyi.circlemenu.view.CircleLayout.OnRotationFinishedListener;
 
-public class MainActivity extends Activity implements OnItemSelectedListener, OnItemClickListener{
+public class MainActivity extends Activity implements OnItemSelectedListener,
+		OnItemClickListener, OnRotationFinishedListener {
 	TextView selectedTextView;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
-		CircleLayout circleMenu = (CircleLayout)findViewById(R.id.main_circle_layout);
+
+		CircleLayout circleMenu = (CircleLayout) findViewById(R.id.main_circle_layout);
 		circleMenu.setOnItemSelectedListener(this);
 		circleMenu.setOnItemClickListener(this);
+		circleMenu.setOnRotationFinishedListener(this);
 
-		selectedTextView = (TextView)findViewById(R.id.main_selected_textView);
-		selectedTextView.setText(((CircleImageView)circleMenu.getSelectedItem()).getName());
+		selectedTextView = (TextView) findViewById(R.id.main_selected_textView);
+		selectedTextView.setText(((CircleImageView) circleMenu
+				.getSelectedItem()).getName());
 	}
 
 	@Override
-	public void onItemSelected(View view, int position, long id, String name) {		
+	public void onItemSelected(View view, String name) {
 		selectedTextView.setText(name);
-		
+
 		switch (view.getId()) {
 			case R.id.main_facebook_image:
-				// Handle facebook selection		
+				// Handle facebook selection
 				break;
 			case R.id.main_google_image:
-				// Handle google selection	
+				// Handle google selection
 				break;
 			case R.id.main_linkedin_image:
-				// Handle linkedin selection		
+				// Handle linkedin selection
 				break;
 			case R.id.main_myspace_image:
-				// Handle myspace selection		
+				// Handle myspace selection
 				break;
 			case R.id.main_twitter_image:
-				// Handle twitter selection		
+				// Handle twitter selection
 				break;
 			case R.id.main_wordpress_image:
-				// Handle wordpress selection		
+				// Handle wordpress selection
 				break;
 		}
 	}
 
 	@Override
-	public void onItemClick(View view, int position, long id, String name) {
-		Toast.makeText(getApplicationContext(), getResources().getString(R.string.start_app) + " " + name, Toast.LENGTH_SHORT).show();
-		
+	public void onItemClick(View view, String name) {
+		Toast.makeText(getApplicationContext(),
+				getResources().getString(R.string.start_app) + " " + name,
+				Toast.LENGTH_SHORT).show();
+
 		switch (view.getId()) {
 			case R.id.main_facebook_image:
-				// Handle facebook click		
+				// Handle facebook click
 				break;
 			case R.id.main_google_image:
-				// Handle google click		
+				// Handle google click
 				break;
 			case R.id.main_linkedin_image:
-				// Handle linkedin click		
+				// Handle linkedin click
 				break;
 			case R.id.main_myspace_image:
-				// Handle myspace click		
+				// Handle myspace click
 				break;
 			case R.id.main_twitter_image:
-				// Handle twitter click		
+				// Handle twitter click
 				break;
 			case R.id.main_wordpress_image:
-				// Handle wordpress click		
+				// Handle wordpress click
 				break;
 		}
+	}
+
+	@Override
+	public void onRotationFinished(View view, String name) {
+		Toast.makeText(getApplicationContext(), "Rotation finished",
+				Toast.LENGTH_SHORT).show();
+		((CircleImageView)view).setImageResource(R.drawable.ic_launcher);
 	}
 
 }
