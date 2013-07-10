@@ -25,5 +25,6 @@
     <string name="wordpress">Wordpress</string>
     <string name="myspace">Myspace</string>
     <string name="start_app">Starting application:</string>
+    <string name="center_click">Center has been clicked</string>
 
 </resources>

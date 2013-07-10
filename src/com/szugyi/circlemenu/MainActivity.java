@@ -24,12 +24,13 @@ import android.widget.Toast;
 
 import com.szugyi.circlemenu.view.CircleImageView;
 import com.szugyi.circlemenu.view.CircleLayout;
+import com.szugyi.circlemenu.view.CircleLayout.OnCenterClickListener;
 import com.szugyi.circlemenu.view.CircleLayout.OnItemClickListener;
 import com.szugyi.circlemenu.view.CircleLayout.OnItemSelectedListener;
 import com.szugyi.circlemenu.view.CircleLayout.OnRotationFinishedListener;
 
 public class MainActivity extends Activity implements OnItemSelectedListener,
-		OnItemClickListener, OnRotationFinishedListener {
+		OnItemClickListener, OnRotationFinishedListener, OnCenterClickListener {
 	TextView selectedTextView;
 
 	@Override
@@ -41,6 +42,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 		circleMenu.setOnItemSelectedListener(this);
 		circleMenu.setOnItemClickListener(this);
 		circleMenu.setOnRotationFinishedListener(this);
+		circleMenu.setOnCenterClickListener(this);
 
 		selectedTextView = (TextView) findViewById(R.id.main_selected_textView);
 		selectedTextView.setText(((CircleImageView) circleMenu
@@ -99,6 +101,12 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 				// Handle wordpress click
 				break;
 		}
+	}
+	
+	@Override
+	public void onCenterClick() {
+		Toast.makeText(getApplicationContext(), R.string.center_click,
+				Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

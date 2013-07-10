@@ -633,38 +633,38 @@ public class CircleLayout extends ViewGroup {
 		return -1;
 	}
 
-	public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-		this.mOnItemClickListener = onItemClickListener;
-	}
-
 	public interface OnItemClickListener {
 		void onItemClick(View view, String name);
 	}
-
-	public void setOnItemSelectedListener(
-			OnItemSelectedListener onItemSelectedListener) {
-		this.mOnItemSelectedListener = onItemSelectedListener;
+	
+	public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+		this.mOnItemClickListener = onItemClickListener;
 	}
 
 	public interface OnItemSelectedListener {
 		void onItemSelected(View view, String name);
 	}
-
+	
+	public void setOnItemSelectedListener(
+			OnItemSelectedListener onItemSelectedListener) {
+		this.mOnItemSelectedListener = onItemSelectedListener;
+	}
+	
 	public interface OnCenterClickListener {
 		void onCenterClick();
 	}
-
+	
 	public void setOnCenterClickListener(
 			OnCenterClickListener onCenterClickListener) {
 		this.mOnCenterClickListener = onCenterClickListener;
 	}
 
+	public interface OnRotationFinishedListener {
+		void onRotationFinished(View view, String name);
+	}
+	
 	public void setOnRotationFinishedListener(
 			OnRotationFinishedListener onRotationFinishedListener) {
 		this.mOnRotationFinishedListener = onRotationFinishedListener;
-	}
-
-	public interface OnRotationFinishedListener {
-		void onRotationFinished(View view, String name);
 	}
 }
