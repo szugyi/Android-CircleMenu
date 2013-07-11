@@ -22,7 +22,7 @@ Attributes
  * `firstChildPosition` ([`East`, `South`, `West`, `North`]) - The angle where the first child of the CircleLayout will be put. Possible values are: `East` - to the right, `South` - to the bottom, `West` - to the left, `North` - to the top. Default: `South`
  * `rotateToCenter` (boolean) - Determines wether the child views should be rotated to "a whole rotation step". For example if you have only two child views it will always rotate them to be on 0°-180° or on 90°-270°. It will also rotate the tapped child view to the `firstChildPosition` if it is not there yet, otherwise the onItemClicked event listener will be called. Deafult: true
  * `isRotating` (boolean) - Determines wether the child views are rotatable or not. If this attribute is set to false then the `rotateToCenter` attribute will also be false. Deafult: true
- * `speed` (integer) - You can set the speed of the rotation. NOTE: The higher the value, the slower the rotation. Values between 10 - 1000 should work well. Default: 75
+ * `speed` (integer) - You can set the speed of the rotation. NOTE: The higher the value, the slower the rotation. Values between 20 - 1000 should work well. Default: 75
 	
 EventListeners
 --------------

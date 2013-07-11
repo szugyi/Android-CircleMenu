@@ -77,6 +77,9 @@ public class CircleLayout extends ViewGroup {
 	private int speed = 75;
 	private float deceleration = 1 + (5f / speed);
 
+	// The runnable of the current rotation
+	private FlingRunnable actRunnable = null;
+
 	/**
 	 * @param context
 	 */
@@ -411,8 +414,7 @@ public class CircleLayout extends ViewGroup {
 					case MotionEvent.ACTION_UP:
 						allowRotating = true;
 						rotateViewToCenter(
-								(CircleImageView) getChildAt(selected), false,
-								true, true);
+								(CircleImageView) getChildAt(selected), false);
 						break;
 				}
 			}
@@ -487,7 +489,7 @@ public class CircleLayout extends ViewGroup {
 			if (mTappedView != null) {
 				CircleImageView view = (CircleImageView) (mTappedView);
 				if (selected != mTappedViewsPostition) {
-					rotateViewToCenter(view, false, true, false);
+					rotateViewToCenter(view, false);
 					if (!rotateToCenter) {
 						if (mOnItemSelectedListener != null) {
 							mOnItemSelectedListener.onItemSelected(mTappedView,
@@ -500,7 +502,7 @@ public class CircleLayout extends ViewGroup {
 						}
 					}
 				} else {
-					rotateViewToCenter(view, false, true, false);
+					rotateViewToCenter(view, false);
 
 					if (mOnItemClickListener != null) {
 						mOnItemClickListener.onItemClick(mTappedView,
@@ -522,8 +524,7 @@ public class CircleLayout extends ViewGroup {
 	 *            if the method is called from the runnable which animates the
 	 *            rotation then it should be true, otherwise false
 	 */
-	private void rotateViewToCenter(CircleImageView view, boolean fromRunnable,
-			boolean fromTap, boolean afterMoving) {
+	private void rotateViewToCenter(CircleImageView view, boolean fromRunnable) {
 		if (rotateToCenter) {
 			float velocityTemp = 1;
 			float destAngle = (float) (firstChildPos - view.getAngle());
@@ -544,20 +545,8 @@ public class CircleLayout extends ViewGroup {
 				startAngle += velocityTemp / speed;
 			}
 
-			// if (!(Math.abs(startAngle - destAngle) < 0.8 && fromTap)) {
 			CircleLayout.this.post(new FlingRunnable(reverser * velocityTemp,
 					!fromRunnable));
-			// } else {
-			// if (afterMoving) {
-			// if (CircleLayout.this.mOnRotationFinishedListener != null) {
-			// CircleImageView selectedView = (CircleImageView)
-			// getChildAt(selected);
-			// CircleLayout.this.mOnRotationFinishedListener
-			// .onRotationFinished(selectedView,
-			// selectedView.getName());
-			// }
-			// }
-			// }
 		}
 	}
 
@@ -567,8 +556,9 @@ public class CircleLayout extends ViewGroup {
 	private class FlingRunnable implements Runnable {
 
 		private float velocity;
-		float angleDelay;
-		boolean isFirstForwarding = true;
+		private float angleDelay;
+		private boolean isFirstForwarding = true;
+		private boolean wasBigEnough = false;
 
 		public FlingRunnable(float velocity) {
 			this(velocity, true);
@@ -578,12 +568,17 @@ public class CircleLayout extends ViewGroup {
 			this.velocity = velocity;
 			this.angleDelay = 360 / getChildCount();
 			this.isFirstForwarding = isFirst;
+
+			if (Math.abs(velocity) > 2) {
+				wasBigEnough = true;
+				CircleLayout.this.actRunnable = this;
+			}
 		}
 
 		public void run() {
 			if (allowRotating) {
-				if (Math.abs(velocity) > 5) {
-					if (rotateToCenter) {
+				if (rotateToCenter) {
+					if (Math.abs(velocity) > 2) {
 						if (!(Math.abs(velocity) < 200 && (Math.abs(angle
 								- firstChildPos)
 								% angleDelay < 2))) {
@@ -592,28 +587,31 @@ public class CircleLayout extends ViewGroup {
 
 							CircleLayout.this.post(this);
 						} else {
-							// if (CircleLayout.this.mOnRotationFinishedListener
-							// != null) {
-							// CircleImageView view = (CircleImageView)
-							// getChildAt(selected);
-							// CircleLayout.this.mOnRotationFinishedListener
-							// .onRotationFinished(view,
-							// view.getName());
-							// }
+							if (wasBigEnough
+									&& CircleLayout.this.actRunnable == this
+									&& (Math.abs(angle - firstChildPos)
+											% angleDelay < 2)) {
+								if (CircleLayout.this.mOnRotationFinishedListener != null) {
+									CircleImageView view = (CircleImageView) getChildAt(selected);
+									CircleLayout.this.mOnRotationFinishedListener
+											.onRotationFinished(view,
+													view.getName());
+								}
+							}
 						}
 					} else {
-						rotateButtons(velocity / speed);
-						velocity /= deceleration;
-
-						CircleLayout.this.post(this);
+						if (isFirstForwarding) {
+							isFirstForwarding = false;
+							CircleLayout.this.rotateViewToCenter(
+									(CircleImageView) getChildAt(selected),
+									true);
+						}
 					}
 				} else {
-					if (isFirstForwarding) {
-						isFirstForwarding = false;
-						CircleLayout.this.rotateViewToCenter(
-								(CircleImageView) getChildAt(selected), true,
-								false, false);
-					}
+					rotateButtons(velocity / speed);
+					velocity /= deceleration;
+
+					CircleLayout.this.post(this);
 				}
 			}
 		}
@@ -636,7 +634,7 @@ public class CircleLayout extends ViewGroup {
 	public interface OnItemClickListener {
 		void onItemClick(View view, String name);
 	}
-	
+
 	public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
 		this.mOnItemClickListener = onItemClickListener;
 	}
@@ -644,16 +642,16 @@ public class CircleLayout extends ViewGroup {
 	public interface OnItemSelectedListener {
 		void onItemSelected(View view, String name);
 	}
-	
+
 	public void setOnItemSelectedListener(
 			OnItemSelectedListener onItemSelectedListener) {
 		this.mOnItemSelectedListener = onItemSelectedListener;
 	}
-	
+
 	public interface OnCenterClickListener {
 		void onCenterClick();
 	}
-	
+
 	public void setOnCenterClickListener(
 			OnCenterClickListener onCenterClickListener) {
 		this.mOnCenterClickListener = onCenterClickListener;
@@ -662,7 +660,7 @@ public class CircleLayout extends ViewGroup {
 	public interface OnRotationFinishedListener {
 		void onRotationFinished(View view, String name);
 	}
-	
+
 	public void setOnRotationFinishedListener(
 			OnRotationFinishedListener onRotationFinishedListener) {
 		this.mOnRotationFinishedListener = onRotationFinishedListener;

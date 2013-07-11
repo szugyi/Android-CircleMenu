@@ -19,6 +19,8 @@ package com.szugyi.circlemenu;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -102,7 +104,7 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 				break;
 		}
 	}
-	
+
 	@Override
 	public void onCenterClick() {
 		Toast.makeText(getApplicationContext(), R.string.center_click,
@@ -111,9 +113,10 @@ public class MainActivity extends Activity implements OnItemSelectedListener,
 
 	@Override
 	public void onRotationFinished(View view, String name) {
-		Toast.makeText(getApplicationContext(), "Rotation finished",
-				Toast.LENGTH_SHORT).show();
-		((CircleImageView)view).setImageResource(R.drawable.ic_launcher);
+		Animation animation = new RotateAnimation(0, 360, view.getWidth() / 2,
+				view.getHeight() / 2);
+		animation.setDuration(250);
+		view.startAnimation(animation);
 	}
 
 }
