@@ -569,7 +569,7 @@ public class CircleLayout extends ViewGroup {
 			this.angleDelay = 360 / getChildCount();
 			this.isFirstForwarding = isFirst;
 
-			if (Math.abs(velocity) > 2) {
+			if (Math.abs(velocity) > 1) {
 				wasBigEnough = true;
 				CircleLayout.this.actRunnable = this;
 			}
@@ -578,7 +578,7 @@ public class CircleLayout extends ViewGroup {
 		public void run() {
 			if (allowRotating) {
 				if (rotateToCenter) {
-					if (Math.abs(velocity) > 2) {
+					if (Math.abs(velocity) > 1) {
 						if (!(Math.abs(velocity) < 200 && (Math.abs(angle
 								- firstChildPos)
 								% angleDelay < 2))) {
