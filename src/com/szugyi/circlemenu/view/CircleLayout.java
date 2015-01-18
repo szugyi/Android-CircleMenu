@@ -304,7 +304,7 @@ public class CircleLayout extends ViewGroup {
 	 */
 	private void rotateButtons(float degrees) {
 		int left, top, childCount = getChildCount();
-		float angleDelay = 360 / childCount;
+		float angleDelay = 360.0f / childCount;
 		angle += degrees;
 
 		if (angle > 360) {
@@ -576,43 +576,43 @@ public class CircleLayout extends ViewGroup {
 		}
 
 		public void run() {
-			if (allowRotating) {
-				if (rotateToCenter) {
-					if (Math.abs(velocity) > 1) {
-						if (!(Math.abs(velocity) < 200 && (Math.abs(angle
-								- firstChildPos)
-								% angleDelay < 2))) {
-							rotateButtons(velocity / speed);
-							velocity /= deceleration;
+			if (!allowRotating) {
+				return;
+			}
+			if (rotateToCenter) {
+				if (Math.abs(velocity) > 1) {
+					if (!(Math.abs(velocity) < 200 && (Math.abs(angle
+							- firstChildPos)
+							% angleDelay < 2))) {
+						rotateButtons(velocity / speed);
+						velocity /= deceleration;
 
-							CircleLayout.this.post(this);
-						} else {
-							if (wasBigEnough
-									&& CircleLayout.this.actRunnable == this
-									&& (Math.abs(angle - firstChildPos)
-											% angleDelay < 2)) {
-								if (CircleLayout.this.mOnRotationFinishedListener != null) {
-									CircleImageView view = (CircleImageView) getChildAt(selected);
-									CircleLayout.this.mOnRotationFinishedListener
-											.onRotationFinished(view,
-													view.getName());
-								}
-							}
-						}
+						CircleLayout.this.post(this);
 					} else {
-						if (isFirstForwarding) {
-							isFirstForwarding = false;
-							CircleLayout.this.rotateViewToCenter(
-									(CircleImageView) getChildAt(selected),
-									true);
+						if (wasBigEnough
+								&& CircleLayout.this.actRunnable == this
+								&& (Math.abs(angle - firstChildPos)
+										% angleDelay < 2)) {
+							if (CircleLayout.this.mOnRotationFinishedListener != null) {
+								CircleImageView view = (CircleImageView) getChildAt(selected);
+								CircleLayout.this.mOnRotationFinishedListener
+										.onRotationFinished(view,
+												view.getName());
+							}
 						}
 					}
 				} else {
-					rotateButtons(velocity / speed);
-					velocity /= deceleration;
-
-					CircleLayout.this.post(this);
+					if (isFirstForwarding) {
+						isFirstForwarding = false;
+						CircleLayout.this.rotateViewToCenter(
+								(CircleImageView) getChildAt(selected), true);
+					}
 				}
+			} else {
+				rotateButtons(velocity / speed);
+				velocity /= deceleration;
+
+				CircleLayout.this.post(this);
 			}
 		}
 	}
