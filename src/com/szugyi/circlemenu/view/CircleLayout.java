@@ -265,7 +265,7 @@ public class CircleLayout extends ViewGroup {
 		childWidth = (int) (radius / 1.5);
 		childHeight = (int) (radius / 1.5);
 
-		float angleDelay = 360 / getChildCount();
+		float angleDelay = 360.0f / getChildCount();
 
 		for (int i = 0; i < childCount; i++) {
 			final CircleImageView child = (CircleImageView) getChildAt(i);
@@ -566,7 +566,7 @@ public class CircleLayout extends ViewGroup {
 
 		public FlingRunnable(float velocity, boolean isFirst) {
 			this.velocity = velocity;
-			this.angleDelay = 360 / getChildCount();
+			this.angleDelay = 360.0f / getChildCount();
 			this.isFirstForwarding = isFirst;
 
 			if (Math.abs(velocity) > 1) {
