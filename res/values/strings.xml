@@ -17,13 +17,17 @@
 <resources>
 
     <string name="app_name">Circle Menu</string>
-    <string name="hello_world">Hello world!</string>
+    <!-- Main list items -->
+    <string name="main_circle_menu">CircleMenu</string>
+    <string name="main_support_circle_menu">SupportCircleMenu</string>
+    <!-- Menu names -->
     <string name="facebook">Facebook</string>
     <string name="twitter">Twitter</string>
     <string name="google">Google</string>
     <string name="linkedin">LinkedIn</string>
     <string name="wordpress">Wordpress</string>
     <string name="myspace">Myspace</string>
+    <!-- Toasts -->
     <string name="start_app">Starting application:</string>
     <string name="center_click">Center has been clicked</string>
 

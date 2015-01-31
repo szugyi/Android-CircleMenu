@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="main_list">
+        <item>@string/main_circle_menu</item>
+        <item>@string/main_support_circle_menu</item>
+    </string-array>
+    
+</resources>

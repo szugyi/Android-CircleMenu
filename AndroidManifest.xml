@@ -37,6 +37,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".SampleActivity"
+            android:label="@string/main_circle_menu" />
+        <activity
+            android:name=".SupportSampleActivity"
+            android:label="@string/main_support_circle_menu" />
     </application>
 
 </manifest>

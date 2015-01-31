@@ -1,7 +1,7 @@
-package com.szugyi.circlemenu.view;
+package com.szugyi.circlemenu.support.view;
 
 /*
- * Copyright 2015 Csaba Szugyiczki
+ * Copyright 2013 Csaba Szugyiczki
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,21 @@ package com.szugyi.circlemenu.view;
  * limitations under the License.
  */
 
-import android.animation.Animator;
-import android.animation.Animator.AnimatorListener;
-import android.animation.ObjectAnimator;
-import android.animation.TypeEvaluator;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
-import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.view.animation.LinearInterpolator;
+
 import com.szugyi.circlemenu.R;
+import com.szugyi.circlemenu.view.CircleImageView;
 
 /**
  * 
@@ -47,7 +39,7 @@ import com.szugyi.circlemenu.R;
  *         rotatable, and to make the menu items selectable and clickable.
  * 
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+@Deprecated
 public class CircleLayout extends ViewGroup {
 	// Event listeners
 	private OnItemClickListener mOnItemClickListener = null;
@@ -79,12 +71,16 @@ public class CircleLayout extends ViewGroup {
 	private boolean[] quadrantTouched;
 
 	// Settings of the ViewGroup
+	private boolean allowRotating = true;
 	private float angle = 90;
 	private float firstChildPos = 90;
 	private boolean rotateToCenter = true;
 	private boolean isRotating = true;
+	private int speed = 75;
+	private float deceleration = 1 + (5f / speed);
 
-	private ObjectAnimator animator;
+	// The runnable of the current rotation
+	private FlingRunnable actRunnable = null;
 
 	/**
 	 * @param context
@@ -134,6 +130,8 @@ public class CircleLayout extends ViewGroup {
 			rotateToCenter = a.getBoolean(R.styleable.Circle_rotateToCenter,
 					true);
 			isRotating = a.getBoolean(R.styleable.Circle_isRotating, true);
+			speed = a.getInt(R.styleable.Circle_speed, 75);
+			deceleration = 1 + (5f / speed);
 
 			// If the menu is not rotating then it does not have to be centered
 			// since it cannot be even moved
@@ -167,15 +165,6 @@ public class CircleLayout extends ViewGroup {
 			// Needed for the ViewGroup to be drawn
 			setWillNotDraw(false);
 		}
-	}
-
-	public float getAngle() {
-		return angle;
-	}
-
-	public void setAngle(float angle) {
-		this.angle = angle % 360;
-		setChildAngles();
 	}
 
 	/**
@@ -215,6 +204,7 @@ public class CircleLayout extends ViewGroup {
 				Canvas g = canvas;
 				canvas.rotate(0, circleWidth / 2, circleHeight / 2);
 				g.drawBitmap(imageScaled, cx, cy, null);
+
 			}
 		}
 	}
@@ -309,104 +299,30 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	/**
-	 * Rotates the given view to the center of the menu.
-	 * 
-	 * @param view
-	 *            the view to be rotated to the center
-	 */
-	@SuppressLint("NewApi")
-	private void rotateViewToCenter(CircleImageView view) {
-		Log.v(VIEW_LOG_TAG, "rotateViewToCenter");
-		if (rotateToCenter) {
-			float destAngle = (float) (firstChildPos - view.getAngle());
-
-			if (destAngle < 0) {
-				destAngle += 360;
-			}
-
-			if (destAngle > 180) {
-				destAngle = -1 * (360 - destAngle);
-			}
-
-			animateTo(angle + destAngle, 330);
-		}
-	}
-
-	/**
 	 * Rotate the buttons.
 	 * 
 	 * @param degrees
 	 *            The degrees, the menu items should get rotated.
 	 */
 	private void rotateButtons(float degrees) {
-		angle += degrees;
-		setChildAngles();
-	}
-
-	private void animateTo(float endDegree) {
-		animateTo(endDegree, 1000);
-	}
-
-	private void animateTo(float endDegree, long duration) {
-		if (animator != null && animator.isRunning()
-				|| Math.abs(angle - endDegree) < 1) {
-			return;
-		}
-
-		animator = ObjectAnimator.ofFloat(CircleLayout.this, "angle", angle,
-				endDegree);
-		animator.setDuration(duration);
-		animator.setInterpolator(new DecelerateInterpolator());
-		animator.addListener(new AnimatorListener() {
-			private boolean wasCanceled = false;
-
-			@Override
-			public void onAnimationStart(Animator animation) {
-			}
-
-			@Override
-			public void onAnimationRepeat(Animator animation) {
-			}
-
-			@Override
-			public void onAnimationEnd(Animator animation) {
-				if (wasCanceled) {
-					return;
-				}
-
-				if (mOnRotationFinishedListener != null) {
-					CircleImageView view = (CircleImageView) getSelectedItem();
-					mOnRotationFinishedListener.onRotationFinished(view,
-							view.getName());
-				}
-			}
-
-			@Override
-			public void onAnimationCancel(Animator animation) {
-				wasCanceled = true;
-			}
-		});
-		animator.start();
-	}
-
-	private void stopAnimation() {
-		if (animator != null && animator.isRunning()) {
-			animator.cancel();
-			animator = null;
-		}
-	}
-
-	private void setChildAngles() {
 		int left, top, childCount = getChildCount();
 		float angleDelay = 360.0f / childCount;
-		float localAngle = angle;
+		angle += degrees;
+
+		if (angle > 360) {
+			angle -= 360;
+		} else {
+			if (angle < 0) {
+				angle += 360;
+			}
+		}
 
 		for (int i = 0; i < childCount; i++) {
-			if (localAngle > 360) {
-				localAngle -= 360;
+			if (angle > 360) {
+				angle -= 360;
 			} else {
-				if (localAngle < 0) {
-					localAngle += 360;
+				if (angle < 0) {
+					angle += 360;
 				}
 			}
 
@@ -416,14 +332,14 @@ public class CircleLayout extends ViewGroup {
 			}
 			left = Math
 					.round((float) (((circleWidth / 2) - childWidth / 2) + radius
-							* Math.cos(Math.toRadians(localAngle))));
+							* Math.cos(Math.toRadians(angle))));
 			top = Math
 					.round((float) (((circleHeight / 2) - childHeight / 2) + radius
-							* Math.sin(Math.toRadians(localAngle))));
+							* Math.sin(Math.toRadians(angle))));
 
-			child.setAngle(localAngle);
+			child.setAngle(angle);
 
-			if (Math.abs(localAngle - firstChildPos) < (angleDelay / 2)
+			if (Math.abs(angle - firstChildPos) < (angleDelay / 2)
 					&& selected != child.getPosition()) {
 				selected = child.getPosition();
 
@@ -434,25 +350,28 @@ public class CircleLayout extends ViewGroup {
 			}
 
 			child.layout(left, top, left + childWidth, top + childHeight);
-			localAngle += angleDelay;
+			angle += angleDelay;
 		}
 	}
 
 	/**
-	 * @return The angle of the unit circle with the image views center
+	 * @return The angle of the unit circle with the image view's center
 	 */
-	private double getPositionAngle(double xTouch, double yTouch) {
+	private double getAngle(double xTouch, double yTouch) {
 		double x = xTouch - (circleWidth / 2d);
 		double y = circleHeight - yTouch - (circleHeight / 2d);
 
-		switch (getPositionQuadrant(x, y)) {
+		switch (getQuadrant(x, y)) {
 			case 1:
 				return Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
+
 			case 2:
 			case 3:
 				return 180 - (Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI);
+
 			case 4:
 				return 360 + Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
+
 			default:
 				// ignore, does not happen
 				return 0;
@@ -460,9 +379,9 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	/**
-	 * @return The quadrant of the position
+	 * @return The selected quadrant.
 	 */
-	private static int getPositionQuadrant(double x, double y) {
+	private static int getQuadrant(double x, double y) {
 		if (x >= 0) {
 			return y >= 0 ? 1 : 4;
 		} else {
@@ -470,52 +389,48 @@ public class CircleLayout extends ViewGroup {
 		}
 	}
 
-	private double touchStartAngle;
-	private boolean didMove = false;
+	private double startAngle;
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (isEnabled()) {
-			mGestureDetector.onTouchEvent(event);
 			if (isRotating) {
 				switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
+
 						// reset the touched quadrants
 						for (int i = 0; i < quadrantTouched.length; i++) {
 							quadrantTouched[i] = false;
 						}
 
-						stopAnimation();
-						touchStartAngle = getPositionAngle(event.getX(),
-								event.getY());
-						didMove = false;
+						allowRotating = false;
+
+						startAngle = getAngle(event.getX(), event.getY());
 						break;
 					case MotionEvent.ACTION_MOVE:
-						double currentAngle = getPositionAngle(event.getX(),
+						double currentAngle = getAngle(event.getX(),
 								event.getY());
-						rotateButtons((float) (touchStartAngle - currentAngle));
-						touchStartAngle = currentAngle;
-						didMove = true;
+						rotateButtons((float) (startAngle - currentAngle));
+						startAngle = currentAngle;
 						break;
 					case MotionEvent.ACTION_UP:
-						if (didMove) {
-							rotateViewToCenter((CircleImageView) getChildAt(selected));
-						}
+						allowRotating = true;
+						rotateViewToCenter(
+								(CircleImageView) getChildAt(selected), false);
 						break;
 				}
 			}
 
 			// set the touched quadrant to true
-			quadrantTouched[getPositionQuadrant(event.getX()
-					- (circleWidth / 2), circleHeight - event.getY()
-					- (circleHeight / 2))] = true;
+			quadrantTouched[getQuadrant(event.getX() - (circleWidth / 2),
+					circleHeight - event.getY() - (circleHeight / 2))] = true;
+			mGestureDetector.onTouchEvent(event);
 			return true;
 		}
 		return false;
 	}
 
 	private class MyGestureListener extends SimpleOnGestureListener {
-
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
 				float velocityY) {
@@ -523,11 +438,12 @@ public class CircleLayout extends ViewGroup {
 				return false;
 			}
 			// get the quadrant of the start and the end of the fling
-			int q1 = getPositionQuadrant(e1.getX() - (circleWidth / 2),
-					circleHeight - e1.getY() - (circleHeight / 2));
-			int q2 = getPositionQuadrant(e2.getX() - (circleWidth / 2),
-					circleHeight - e2.getY() - (circleHeight / 2));
+			int q1 = getQuadrant(e1.getX() - (circleWidth / 2), circleHeight
+					- e1.getY() - (circleHeight / 2));
+			int q2 = getQuadrant(e2.getX() - (circleWidth / 2), circleHeight
+					- e2.getY() - (circleHeight / 2));
 
+			// the inversed rotations
 			if ((q1 == 2 && q2 == 2 && Math.abs(velocityX) < Math
 					.abs(velocityY))
 					|| (q1 == 3 && q2 == 3)
@@ -538,35 +454,17 @@ public class CircleLayout extends ViewGroup {
 					|| ((q1 == 3 && q2 == 4) || (q1 == 4 && q2 == 3))
 					|| (q1 == 2 && q2 == 4 && quadrantTouched[3])
 					|| (q1 == 4 && q2 == 2 && quadrantTouched[3])) {
-				// the inverted rotations
-				animateTo(getCenteredAngle(angle - (velocityX + velocityY) / 25));
+
+				CircleLayout.this.post(new FlingRunnable(-1
+						* (velocityX + velocityY)));
 			} else {
 				// the normal rotation
-				animateTo(getCenteredAngle(angle + (velocityX + velocityY) / 25));
+				CircleLayout.this
+						.post(new FlingRunnable(velocityX + velocityY));
 			}
 
 			return true;
-		}
 
-		private float getCenteredAngle(float angle) {
-			if (rotateToCenter) {
-
-				float angleDelay = 360 / getChildCount();
-				float localAngle = angle % 360;
-				if (localAngle < 0) {
-					localAngle = 360 + localAngle;
-				}
-				for (float i = firstChildPos; i < firstChildPos + 360; i += angleDelay) {
-					float locI = i % 360;
-					float diff = localAngle - locI;
-					if (Math.abs(diff) < angleDelay / 2) {
-						angle -= diff;
-						break;
-					}
-				}
-			}
-
-			return angle;
 		}
 
 		@Override
@@ -592,13 +490,8 @@ public class CircleLayout extends ViewGroup {
 
 			if (mTappedView != null) {
 				CircleImageView view = (CircleImageView) (mTappedView);
-				if (selected == mTappedViewsPostition) {
-					if (mOnItemClickListener != null) {
-						mOnItemClickListener.onItemClick(mTappedView,
-								view.getName());
-					}
-				} else {
-					rotateViewToCenter(view);
+				if (selected != mTappedViewsPostition) {
+					rotateViewToCenter(view, false);
 					if (!rotateToCenter) {
 						if (mOnItemSelectedListener != null) {
 							mOnItemSelectedListener.onItemSelected(mTappedView,
@@ -610,22 +503,134 @@ public class CircleLayout extends ViewGroup {
 									view.getName());
 						}
 					}
+				} else {
+					rotateViewToCenter(view, false);
+
+					if (mOnItemClickListener != null) {
+						mOnItemClickListener.onItemClick(mTappedView,
+								view.getName());
+					}
 				}
 				return true;
 			}
 			return super.onSingleTapUp(e);
 		}
+	}
 
-		private int pointToPosition(float x, float y) {
-			for (int i = 0; i < getChildCount(); i++) {
-				View item = (View) getChildAt(i);
-				if (item.getLeft() < x && item.getRight() > x
-						& item.getTop() < y && item.getBottom() > y) {
-					return i;
-				}
+	/**
+	 * Rotates the given view to the center of the menu.
+	 * 
+	 * @param view
+	 *            the view to be rotated to the center
+	 * @param fromRunnable
+	 *            if the method is called from the runnable which animates the
+	 *            rotation then it should be true, otherwise false
+	 */
+	private void rotateViewToCenter(CircleImageView view, boolean fromRunnable) {
+		if (rotateToCenter) {
+			float velocityTemp = 1;
+			float destAngle = (float) (firstChildPos - view.getAngle());
+			float startAngle = 0;
+			int reverser = 1;
+
+			if (destAngle < 0) {
+				destAngle += 360;
 			}
-			return -1;
+
+			if (destAngle > 180) {
+				reverser = -1;
+				destAngle = 360 - destAngle;
+			}
+
+			while (startAngle < destAngle) {
+				velocityTemp *= deceleration;
+				startAngle += velocityTemp / speed;
+			}
+
+			CircleLayout.this.post(new FlingRunnable(reverser * velocityTemp,
+					!fromRunnable));
 		}
+	}
+
+	/**
+	 * A {@link Runnable} for animating the menu rotation.
+	 */
+	private class FlingRunnable implements Runnable {
+
+		private float velocity;
+		private float angleDelay;
+		private boolean isFirstForwarding = true;
+		private boolean wasBigEnough = false;
+
+		public FlingRunnable(float velocity) {
+			this(velocity, true);
+		}
+
+		public FlingRunnable(float velocity, boolean isFirst) {
+			this.velocity = velocity;
+			this.angleDelay = 360.0f / getChildCount();
+			this.isFirstForwarding = isFirst;
+
+			if (Math.abs(velocity) > 1) {
+				wasBigEnough = true;
+				CircleLayout.this.actRunnable = this;
+			}
+		}
+
+		public void run() {
+			if (!allowRotating) {
+				return;
+			}
+			if (rotateToCenter) {
+				if (Math.abs(velocity) > 1) {
+					if (!(Math.abs(velocity) < 200 && (Math.abs(angle
+							- firstChildPos)
+							% angleDelay < 2))) {
+						rotateButtons(velocity / speed);
+						velocity /= deceleration;
+
+						CircleLayout.this.post(this);
+					} else {
+						if (wasBigEnough
+								&& CircleLayout.this.actRunnable == this
+								&& (Math.abs(angle - firstChildPos)
+										% angleDelay < 2)) {
+							if (CircleLayout.this.mOnRotationFinishedListener != null) {
+								CircleImageView view = (CircleImageView) getChildAt(selected);
+								CircleLayout.this.mOnRotationFinishedListener
+										.onRotationFinished(view,
+												view.getName());
+							}
+						}
+					}
+				} else {
+					if (isFirstForwarding) {
+						isFirstForwarding = false;
+						CircleLayout.this.rotateViewToCenter(
+								(CircleImageView) getChildAt(selected), true);
+					}
+				}
+			} else {
+				rotateButtons(velocity / speed);
+				velocity /= deceleration;
+
+				CircleLayout.this.post(this);
+			}
+		}
+	}
+
+	private int pointToPosition(float x, float y) {
+
+		for (int i = 0; i < getChildCount(); i++) {
+
+			View item = (View) getChildAt(i);
+			if (item.getLeft() < x && item.getRight() > x & item.getTop() < y
+					&& item.getBottom() > y) {
+				return i;
+			}
+
+		}
+		return -1;
 	}
 
 	public interface OnItemClickListener {
