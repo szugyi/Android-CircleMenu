@@ -8,7 +8,7 @@ Screenshots
 
 Api levels
 ----------
-- 8 and above: /support/view/CircleLayout
+- 8 and above: /support/view/CircleLayout (!!! Has known bugs! See the issues !!!)
 - 11 and above: /view/CircleLayout
 
 Basic usage
