@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circle="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/main_calendar_image"
+        circle:name="@string/calendar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_calendar" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/main_cloud_image"
+        circle:name="@string/cloud"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_cloud" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/main_facebook_image"
+        circle:name="@string/facebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_facebook" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/main_key_image"
+        circle:name="@string/key"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_key" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/main_profile_image"
+        circle:name="@string/profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_profile" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/main_tap_image"
+        circle:name="@string/tag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/icon_tag" />
+
+</merge>

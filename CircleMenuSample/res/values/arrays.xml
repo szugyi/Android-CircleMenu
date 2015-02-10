@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="main_list">
+        <item>@string/main_sample</item>
+        <item>@string/main_fast</item>
+        <item>@string/main_no_rotation</item>
+        <item>@string/main_west</item>
+        <item>@string/main_background</item>
+        <item>@string/main_7_icons</item>
+        <item>@string/main_8_icons</item>
+    </string-array>
+    
+</resources>

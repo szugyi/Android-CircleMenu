@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Copyright 2013 Csaba Szugyiczki
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<resources>
+
+    <string name="app_name">Circle Menu</string>
+    <!-- Main list items -->
+    <string name="main_sample">Sample Circle menu</string>
+    <string name="main_fast">Fast rotation</string>
+    <string name="main_no_rotation">No rotation</string>
+    <string name="main_west">Orientation to west</string>
+    <string name="main_background">Circle menu with background</string>
+    <string name="main_7_icons">7 Icons</string>
+    <string name="main_8_icons">8 Icons</string>
+    <!-- Menu names -->
+    <string name="business_card">Business Card</string>
+    <string name="calendar">Calendar</string>
+    <string name="cloud">Cloud</string>
+    <string name="facebook">Facebook</string>
+    <string name="key">Key</string>
+    <string name="mail">Mail</string>
+    <string name="profile">Profile</string>
+    <string name="tag">Tag</string>
+    <string name="voice_search">Voice Search</string>
+    <!-- Toasts -->
+    <string name="start_app">Starting application:</string>
+    <string name="center_click">Center has been clicked</string>
+
+</resources>
