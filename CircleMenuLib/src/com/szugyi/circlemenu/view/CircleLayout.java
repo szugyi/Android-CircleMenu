@@ -394,11 +394,12 @@ public class CircleLayout extends ViewGroup {
 							* Math.sin(Math.toRadians(localAngle))));
 
 			child.setAngle(localAngle);
-
-			if (Math.abs(localAngle - firstChildPos) < (angleDelay / 2)
-					&& selected != child.getPosition()) {
+			float distance = Math.abs(localAngle - firstChildPos);
+			float halfangleDelay = angleDelay / 2;
+			boolean isFirstItem = distance < halfangleDelay
+					|| distance > (360 - halfangleDelay);
+			if (isFirstItem && selected != child.getPosition()) {
 				selected = child.getPosition();
-
 				if (onItemSelectedListener != null && isRotating) {
 					onItemSelectedListener.onItemSelected(child,
 							child.getName());
