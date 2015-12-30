@@ -54,12 +54,22 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
 		circleMenu.setOnCenterClickListener(this);
 
 		selectedTextView = (TextView) findViewById(R.id.main_selected_textView);
-		selectedTextView.setText(((CircleImageView) circleMenu
-				.getSelectedItem()).getName());
+		
+		String name = null;
+		View view = circleMenu.getSelectedItem();
+		if (view instanceof CircleImageView) {
+			name = ((CircleImageView) view).getName();
+		}
+		selectedTextView.setText(name);
 	}
 
 	@Override
-	public void onItemSelected(View view, String name) {
+	public void onItemSelected(View view) {
+		String name = null;
+		if (view instanceof CircleImageView) {
+			name = ((CircleImageView) view).getName();
+		}
+
 		selectedTextView.setText(name);
 
 		switch (view.getId()) {
@@ -85,7 +95,12 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
 	}
 
 	@Override
-	public void onItemClick(View view, String name) {
+	public void onItemClick(View view) {
+		String name = null;
+		if (view instanceof CircleImageView) {
+			name = ((CircleImageView) view).getName();
+		}
+
 		Toast.makeText(getApplicationContext(),
 				getResources().getString(R.string.start_app) + " " + name,
 				Toast.LENGTH_SHORT).show();
@@ -113,7 +128,12 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
 	}
 
 	@Override
-	public void onRotationFinished(View view, String name) {
+	public void onRotationFinished(View view) {
+		String name = null;
+		if (view instanceof CircleImageView) {
+			name = ((CircleImageView) view).getName();
+		}
+
 		Animation animation = new RotateAnimation(0, 360, view.getWidth() / 2,
 				view.getHeight() / 2);
 		animation.setDuration(250);

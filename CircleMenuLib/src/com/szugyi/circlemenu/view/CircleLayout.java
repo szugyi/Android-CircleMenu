@@ -76,9 +76,8 @@ public class CircleLayout extends ViewGroup {
 	private boolean isRotating = true;
 
 	// Tapped and selected child
-	private int tappedViewsPostition = -1;
 	private View tappedView = null;
-	private int selected = 0;
+	private View selectedView = null;
 
 	// Rotation animator
 	private ObjectAnimator animator;
@@ -165,7 +164,10 @@ public class CircleLayout extends ViewGroup {
 	 *         position
 	 */
 	public View getSelectedItem() {
-		return (selected >= 0) ? getChildAt(selected) : null;
+		if (selectedView == null) {
+			selectedView = getChildAt(0);
+		}
+		return selectedView;
 	}
 
 	@Override
@@ -263,7 +265,7 @@ public class CircleLayout extends ViewGroup {
 		float angleDelay = 360.0f / getChildCount();
 
 		for (int i = 0; i < childCount; i++) {
-			final CircleImageView child = (CircleImageView) getChildAt(i);
+			final View child = getChildAt(i);
 			if (child.getVisibility() == GONE) {
 				continue;
 			}
@@ -276,8 +278,10 @@ public class CircleLayout extends ViewGroup {
 				}
 			}
 
-			child.setAngle(angle);
-			child.setPosition(i);
+			child.setTag(angle);
+			// TODO Not needed for CircleImageView
+			childWidth = child.getMeasuredWidth();
+			childHeight = child.getMeasuredHeight();
 
 			left = Math
 					.round((float) (((layoutWidth / 2) - childWidth / 2) + radius
@@ -297,10 +301,11 @@ public class CircleLayout extends ViewGroup {
 	 * @param view
 	 *            the view to be rotated
 	 */
-	private void rotateViewToCenter(CircleImageView view) {
+	private void rotateViewToCenter(View view) {
 		Log.v(VIEW_LOG_TAG, "rotateViewToCenter");
 		if (isRotating) {
-			float destAngle = (float) (firstChildPos - view.getAngle());
+			float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
+			float destAngle = (float) (firstChildPos - viewAngle);
 
 			if (destAngle < 0) {
 				destAngle += 360;
@@ -347,9 +352,8 @@ public class CircleLayout extends ViewGroup {
 				}
 
 				if (onRotationFinishedListener != null) {
-					CircleImageView view = (CircleImageView) getSelectedItem();
-					onRotationFinishedListener.onRotationFinished(view,
-							view.getName());
+					View view = getSelectedItem();
+					onRotationFinishedListener.onRotationFinished(view);
 				}
 			}
 
@@ -382,7 +386,7 @@ public class CircleLayout extends ViewGroup {
 				}
 			}
 
-			final CircleImageView child = (CircleImageView) getChildAt(i);
+			final View child = getChildAt(i);
 			if (child.getVisibility() == GONE) {
 				continue;
 			}
@@ -393,16 +397,15 @@ public class CircleLayout extends ViewGroup {
 					.round((float) (((circleHeight / 2) - childHeight / 2) + radius
 							* Math.sin(Math.toRadians(localAngle))));
 
-			child.setAngle(localAngle);
+			child.setTag(localAngle);
 			float distance = Math.abs(localAngle - firstChildPos);
 			float halfangleDelay = angleDelay / 2;
 			boolean isFirstItem = distance < halfangleDelay
 					|| distance > (360 - halfangleDelay);
-			if (isFirstItem && selected != child.getPosition()) {
-				selected = child.getPosition();
+			if (isFirstItem && selectedView != child) {
+				selectedView = child;
 				if (onItemSelectedListener != null && isRotating) {
-					onItemSelectedListener.onItemSelected(child,
-							child.getName());
+					onItemSelectedListener.onItemSelected(child);
 				}
 			}
 
@@ -473,7 +476,7 @@ public class CircleLayout extends ViewGroup {
 						break;
 					case MotionEvent.ACTION_UP:
 						if (didMove) {
-							rotateViewToCenter((CircleImageView) getChildAt(selected));
+							rotateViewToCenter(selectedView);
 						}
 						break;
 				}
@@ -548,7 +551,7 @@ public class CircleLayout extends ViewGroup {
 
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
-			tappedViewsPostition = pointToPosition(e.getX(), e.getY());
+			int tappedViewsPostition = pointToPosition(e.getX(), e.getY());
 			if (tappedViewsPostition >= 0) {
 				tappedView = getChildAt(tappedViewsPostition);
 				tappedView.setPressed(true);
@@ -568,23 +571,19 @@ public class CircleLayout extends ViewGroup {
 			}
 
 			if (tappedView != null) {
-				CircleImageView view = (CircleImageView) (tappedView);
-				if (selected == tappedViewsPostition) {
+				if (selectedView == tappedView) {
 					if (onItemClickListener != null) {
-						onItemClickListener.onItemClick(tappedView,
-								view.getName());
+						onItemClickListener.onItemClick(tappedView);
 					}
 				} else {
-					rotateViewToCenter(view);
+					rotateViewToCenter(tappedView);
 					if (!isRotating) {
 						if (onItemSelectedListener != null) {
-							onItemSelectedListener.onItemSelected(tappedView,
-									view.getName());
+							onItemSelectedListener.onItemSelected(tappedView);
 						}
 
 						if (onItemClickListener != null) {
-							onItemClickListener.onItemClick(tappedView,
-									view.getName());
+							onItemClickListener.onItemClick(tappedView);
 						}
 					}
 				}
@@ -606,7 +605,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	public interface OnItemClickListener {
-		void onItemClick(View view, String name);
+		void onItemClick(View view);
 	}
 
 	public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
@@ -614,7 +613,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	public interface OnItemSelectedListener {
-		void onItemSelected(View view, String name);
+		void onItemSelected(View view);
 	}
 
 	public void setOnItemSelectedListener(
@@ -632,7 +631,7 @@ public class CircleLayout extends ViewGroup {
 	}
 
 	public interface OnRotationFinishedListener {
-		void onRotationFinished(View view, String name);
+		void onRotationFinished(View view);
 	}
 
 	public void setOnRotationFinishedListener(

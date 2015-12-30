@@ -8,6 +8,7 @@
         <item>@string/main_background</item>
         <item>@string/main_7_icons</item>
         <item>@string/main_8_icons</item>
+        <item>@string/main_any_view</item>
     </string-array>
     
 </resources>

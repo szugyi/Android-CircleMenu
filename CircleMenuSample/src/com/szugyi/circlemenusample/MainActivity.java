@@ -45,6 +45,10 @@ public class MainActivity extends ListActivity {
 				intent.putExtra(SampleActivity.ARG_LAYOUT,
 						R.layout.sample_8_items);
 				break;
+			case 7:
+				intent.putExtra(SampleActivity.ARG_LAYOUT,
+						R.layout.sample_any_items);
+				break;
 		}
 
 		startActivity(intent);

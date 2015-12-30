@@ -25,6 +25,7 @@
     <string name="main_background">Circle menu with background</string>
     <string name="main_7_icons">7 Icons</string>
     <string name="main_8_icons">8 Icons</string>
+    <string name="main_any_view">Any view</string>
     <!-- Menu names -->
     <string name="business_card">Business Card</string>
     <string name="calendar">Calendar</string>
