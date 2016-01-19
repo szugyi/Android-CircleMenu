@@ -178,6 +178,7 @@ public class CircleLayout extends ViewGroup {
 			// Scaling the size of the background image
 			if (imageScaled == null) {
 				// TODO Why do we need childWidth here?
+				// Let's create a new attribute to set the background size
 				int childWidth = maxChildWidth;
 				float sx = (((radius + childWidth / 4) * 2) / (float) imageOriginal
 						.getWidth());
@@ -204,9 +205,9 @@ public class CircleLayout extends ViewGroup {
 		}
 	}
 
+	// TODO Modify onMeasure to be able to handle Wrap_Content appropriately
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-		Log.v("CircleLayout", "onMeasure was called");
 		maxChildWidth = 0;
 		maxChildHeight = 0;
 
@@ -264,6 +265,7 @@ public class CircleLayout extends ViewGroup {
 				: layoutHeight / 3;
 
 		// TODO Why did we used it like this?
+		// Might be a good idea to create a new attribute for this
 		int childWidth = (int) (radius / 1.5);
 		int childHeight = (int) (radius / 1.5);
 
@@ -406,6 +408,7 @@ public class CircleLayout extends ViewGroup {
 
 			child.setTag(localAngle);
 
+			// TODO Is there a better way than this halfangleDelay to prevent false selections?
 			float distance = Math.abs(localAngle - firstChildPos);
 			float halfangleDelay = angleDelay / 2;
 			boolean isFirstItem = distance < halfangleDelay
