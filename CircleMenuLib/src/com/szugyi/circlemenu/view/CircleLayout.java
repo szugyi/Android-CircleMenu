@@ -61,8 +61,6 @@ public class CircleLayout extends ViewGroup {
 	// Child sizes
 	private int maxChildWidth = 0;
 	private int maxChildHeight = 0;
-	private int childWidth = 0;
-	private int childHeight = 0;
 
 	// Touch detection
 	private GestureDetector gestureDetector;
@@ -179,6 +177,8 @@ public class CircleLayout extends ViewGroup {
 		if (imageOriginal != null) {
 			// Scaling the size of the background image
 			if (imageScaled == null) {
+				// TODO Why do we need childWidth here?
+				int childWidth = maxChildWidth;
 				float sx = (((radius + childWidth / 4) * 2) / (float) imageOriginal
 						.getWidth());
 				float sy = (((radius + childWidth / 4) * 2) / (float) imageOriginal
@@ -206,6 +206,7 @@ public class CircleLayout extends ViewGroup {
 
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		Log.v("CircleLayout", "onMeasure was called");
 		maxChildWidth = 0;
 		maxChildHeight = 0;
 
@@ -229,6 +230,9 @@ public class CircleLayout extends ViewGroup {
 					.max(maxChildHeight, child.getMeasuredHeight());
 		}
 
+		// TODO This step was used to set all the children to have the same size;
+		// Should not be needed in the new implementation
+		
 		// Measure again for each child to be exactly the same size.
 		childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(maxChildWidth,
 				MeasureSpec.EXACTLY);
@@ -241,7 +245,7 @@ public class CircleLayout extends ViewGroup {
 				continue;
 			}
 
-			child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+			// child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 		}
 
 		setMeasuredDimension(resolveSize(maxChildWidth, widthMeasureSpec),
@@ -259,8 +263,9 @@ public class CircleLayout extends ViewGroup {
 		radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
 				: layoutHeight / 3;
 
-		childWidth = (int) (radius / 1.5);
-		childHeight = (int) (radius / 1.5);
+		// TODO Why did we used it like this?
+		int childWidth = (int) (radius / 1.5);
+		int childHeight = (int) (radius / 1.5);
 
 		float angleDelay = 360.0f / getChildCount();
 
@@ -279,7 +284,6 @@ public class CircleLayout extends ViewGroup {
 			}
 
 			child.setTag(angle);
-			// TODO Not needed for CircleImageView
 			childWidth = child.getMeasuredWidth();
 			childHeight = child.getMeasuredHeight();
 
@@ -390,6 +394,9 @@ public class CircleLayout extends ViewGroup {
 			if (child.getVisibility() == GONE) {
 				continue;
 			}
+
+			int childWidth = child.getMeasuredWidth();
+			int childHeight = child.getMeasuredHeight();
 			left = Math
 					.round((float) (((circleWidth / 2) - childWidth / 2) + radius
 							* Math.cos(Math.toRadians(localAngle))));
@@ -398,6 +405,7 @@ public class CircleLayout extends ViewGroup {
 							* Math.sin(Math.toRadians(localAngle))));
 
 			child.setTag(localAngle);
+
 			float distance = Math.abs(localAngle - firstChildPos);
 			float halfangleDelay = angleDelay / 2;
 			boolean isFirstItem = distance < halfangleDelay
@@ -556,17 +564,17 @@ public class CircleLayout extends ViewGroup {
 				tappedView = getChildAt(tappedViewsPostition);
 				tappedView.setPressed(true);
 			} else {
+				// Determine if it was a center click
 				float centerX = circleWidth / 2;
 				float centerY = circleHeight / 2;
 
-				if (e.getX() < centerX + (childWidth / 2)
-						&& e.getX() > centerX - childWidth / 2
-						&& e.getY() < centerY + (childHeight / 2)
-						&& e.getY() > centerY - (childHeight / 2)) {
-					if (onCenterClickListener != null) {
-						onCenterClickListener.onCenterClick();
-						return true;
-					}
+				if (onCenterClickListener != null
+						&& e.getX() < centerX + (maxChildWidth / 2)
+						&& e.getX() > centerX - (maxChildWidth / 2)
+						&& e.getY() < centerY + (maxChildHeight / 2)
+						&& e.getY() > centerY - (maxChildHeight / 2)) {
+					onCenterClickListener.onCenterClick();
+					return true;
 				}
 			}
 
