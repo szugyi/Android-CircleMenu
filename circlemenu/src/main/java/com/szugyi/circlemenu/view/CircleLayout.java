@@ -186,7 +186,6 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
-    // TODO Modify onMeasure to be able to handle Wrap_Content appropriately
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         Log.v(VIEW_LOG_TAG, "onMeasure");
