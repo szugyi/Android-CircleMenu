@@ -25,5 +25,8 @@ android:
     licenses:
         - 'android-sdk-preview-license-.+'
         - 'android-sdk-license-.+'
+before_script:
+    - chmod +x ./before.sh
+    - ./before.sh
 script:
     - ./gradlew build

@@ -27,7 +27,8 @@ import com.szugyi.circlemenu.R;
  * 
  * @author Szugyi
  * Custom ImageView for the CircleLayout class.
- * Makes it possible for the image to have a name.
+ * Makes it possible for the image to have a name,
+ * which can be displayed separately from the ImageView itself.
  */
 public class CircleImageView extends ImageView {
 	// The name of the view
@@ -49,26 +50,14 @@ public class CircleImageView extends ImageView {
 		this.name = name;
 	}
 
-	/**
-	 * @param context
-	 */
 	public CircleImageView(Context context) {
 		this(context, null);
 	}
 
-	/**
-	 * @param context
-	 * @param attrs
-	 */
 	public CircleImageView(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
 
-	/**
-	 * @param context
-	 * @param attrs
-	 * @param defStyle
-	 */
 	public CircleImageView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 		if (attrs != null) {
@@ -76,6 +65,7 @@ public class CircleImageView extends ImageView {
 					R.styleable.CircleImageView);
 			
 			this.name = array.getString(R.styleable.CircleImageView_name);
+			array.recycle();
 		}
 	}
 
