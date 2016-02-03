@@ -70,7 +70,6 @@ public class CircleLayout extends ViewGroup {
     private boolean isRotating = true;
 
     // Tapped and selected child
-    private View tappedView = null;
     private View selectedView = null;
 
     // Rotation animator
@@ -279,6 +278,50 @@ public class CircleLayout extends ViewGroup {
         setChildAngles();
     }
 
+    private void setChildAngles() {
+        int left, top, childWidth, childHeight, childCount = getChildCount();
+        float angleDelay = 360.0f / childCount;
+        float halfAngle = angleDelay / 2;
+        float localAngle = angle;
+
+        for (int i = 0; i < childCount; i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() == GONE) {
+                continue;
+            }
+
+            if (localAngle > 360) {
+                localAngle -= 360;
+            } else if (localAngle < 0) {
+                localAngle += 360;
+            }
+
+            childWidth = child.getMeasuredWidth();
+            childHeight = child.getMeasuredHeight();
+            left = Math
+                    .round((float) (((circleWidth / 2.0) - childWidth / 2.0) + radius
+                            * Math.cos(Math.toRadians(localAngle))));
+            top = Math
+                    .round((float) (((circleHeight / 2.0) - childHeight / 2.0) + radius
+                            * Math.sin(Math.toRadians(localAngle))));
+
+            child.setTag(localAngle);
+
+            float distance = Math.abs(localAngle - firstChildPos);
+            boolean isFirstItem = distance < halfAngle
+                    || distance > (360 - halfAngle);
+            if (isFirstItem && selectedView != child) {
+                selectedView = child;
+                if (onItemSelectedListener != null && isRotating) {
+                    onItemSelectedListener.onItemSelected(child);
+                }
+            }
+
+            child.layout(left, top, left + childWidth, top + childHeight);
+            localAngle += angleDelay;
+        }
+    }
+
     private void animateTo(float endDegree, long duration) {
         if (animator != null && animator.isRunning()
                 || Math.abs(angle - endDegree) < 1) {
@@ -324,50 +367,6 @@ public class CircleLayout extends ViewGroup {
         if (animator != null && animator.isRunning()) {
             animator.cancel();
             animator = null;
-        }
-    }
-
-    private void setChildAngles() {
-        int left, top, childWidth, childHeight, childCount = getChildCount();
-        float angleDelay = 360.0f / childCount;
-        float halfAngle = angleDelay / 2;
-        float localAngle = angle;
-
-        for (int i = 0; i < childCount; i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() == GONE) {
-                continue;
-            }
-
-            if (localAngle > 360) {
-                localAngle -= 360;
-            } else if (localAngle < 0) {
-                localAngle += 360;
-            }
-
-            childWidth = child.getMeasuredWidth();
-            childHeight = child.getMeasuredHeight();
-            left = Math
-                    .round((float) (((circleWidth / 2.0) - childWidth / 2.0) + radius
-                            * Math.cos(Math.toRadians(localAngle))));
-            top = Math
-                    .round((float) (((circleHeight / 2.0) - childHeight / 2.0) + radius
-                            * Math.sin(Math.toRadians(localAngle))));
-
-            child.setTag(localAngle);
-
-            float distance = Math.abs(localAngle - firstChildPos);
-            boolean isFirstItem = distance < halfAngle
-                    || distance > (360 - halfAngle);
-            if (isFirstItem && selectedView != child) {
-                selectedView = child;
-                if (onItemSelectedListener != null && isRotating) {
-                    onItemSelectedListener.onItemSelected(child);
-                }
-            }
-
-            child.layout(left, top, left + childWidth, top + childHeight);
-            localAngle += angleDelay;
         }
     }
 
@@ -508,6 +507,7 @@ public class CircleLayout extends ViewGroup {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
+            View tappedView = null;
             int tappedViewsPosition = pointToChildPosition(e.getX(), e.getY());
             if (tappedViewsPosition >= 0) {
                 tappedView = getChildAt(tappedViewsPosition);
@@ -518,10 +518,10 @@ public class CircleLayout extends ViewGroup {
                 float centerY = circleHeight / 2;
 
                 if (onCenterClickListener != null
-                        && e.getX() < centerX + (maxChildWidth / 2)
-                        && e.getX() > centerX - (maxChildWidth / 2)
-                        && e.getY() < centerY + (maxChildHeight / 2)
-                        && e.getY() > centerY - (maxChildHeight / 2)) {
+                        && e.getX() < centerX + radius - (maxChildWidth / 2)
+                        && e.getX() > centerX - radius + (maxChildWidth / 2)
+                        && e.getY() < centerY + radius - (maxChildHeight / 2)
+                        && e.getY() > centerY - radius + (maxChildHeight / 2)) {
                     onCenterClickListener.onCenterClick();
                     return true;
                 }
