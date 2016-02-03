@@ -49,11 +49,10 @@ public class CircleLayout extends ViewGroup {
 
     // Background image
     private Bitmap imageOriginal, imageScaled;
-    private Matrix matrix;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
-    private int radius = 0;
+    private float radius = 0;
 
     // Child sizes
     private int maxChildWidth = 0;
@@ -128,15 +127,6 @@ public class CircleLayout extends ViewGroup {
 
             a.recycle();
 
-            // Initialize the matrix only once
-            if (matrix == null) {
-                matrix = new Matrix();
-            } else {
-                // Not needed, you can also post the matrix immediately to
-                // restore the old state
-                matrix.reset();
-            }
-
             // Needed for the ViewGroup to be drawn
             setWillNotDraw(false);
         }
@@ -173,15 +163,13 @@ public class CircleLayout extends ViewGroup {
         if (imageOriginal != null) {
             // Scaling the size of the background image
             if (imageScaled == null) {
-                // TODO Why do we need childWidth here?
-                // Let's create a new attribute to set the background size
-                int childWidth = maxChildWidth;
-                float sx = (((radius + childWidth / 4) * 2) / (float) imageOriginal
-                        .getWidth());
-                float sy = (((radius + childWidth / 4) * 2) / (float) imageOriginal
-                        .getHeight());
+                float diameter = radius * 2;
+                float sx = diameter / imageOriginal
+                        .getWidth();
+                float sy = diameter / imageOriginal
+                        .getHeight();
 
-                matrix = new Matrix();
+                Matrix matrix = new Matrix();
                 matrix.postScale(sx, sy);
 
                 imageScaled = Bitmap.createBitmap(imageOriginal, 0, 0,
@@ -194,9 +182,7 @@ public class CircleLayout extends ViewGroup {
                 int cx = (circleWidth - imageScaled.getWidth()) / 2;
                 int cy = (circleHeight - imageScaled.getHeight()) / 2;
 
-                Canvas g = canvas;
-                canvas.rotate(0, circleWidth / 2, circleHeight / 2);
-                g.drawBitmap(imageScaled, cx, cy, null);
+                canvas.drawBitmap(imageScaled, cx, cy, null);
             }
         }
     }
@@ -204,6 +190,7 @@ public class CircleLayout extends ViewGroup {
     // TODO Modify onMeasure to be able to handle Wrap_Content appropriately
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        Log.v(VIEW_LOG_TAG, "onMeasure");
         maxChildWidth = 0;
         maxChildHeight = 0;
 
@@ -235,7 +222,7 @@ public class CircleLayout extends ViewGroup {
                 MeasureSpec.EXACTLY);
         childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(maxChildHeight,
                 MeasureSpec.EXACTLY);
-        
+
         for (int i = 0; i < count; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == GONE) {
@@ -251,50 +238,17 @@ public class CircleLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        Log.v(VIEW_LOG_TAG, "onLayout");
         int layoutWidth = r - l;
         int layoutHeight = b - t;
 
-        // Laying out the child views
-        final int childCount = getChildCount();
-        int left, top;
         radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
                 : layoutHeight / 3;
 
-        // TODO Why did we used it like this?
-        // Might be a good idea to create a new attribute for this
-        int childWidth = (int) (radius / 1.5);
-        int childHeight = (int) (radius / 1.5);
 
-        float angleDelay = 360.0f / getChildCount();
-
-        for (int i = 0; i < childCount; i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() == GONE) {
-                continue;
-            }
-
-            if (angle > 360) {
-                angle -= 360;
-            } else {
-                if (angle < 0) {
-                    angle += 360;
-                }
-            }
-
-            child.setTag(angle);
-            childWidth = child.getMeasuredWidth();
-            childHeight = child.getMeasuredHeight();
-
-            left = Math
-                    .round((float) (((layoutWidth / 2) - childWidth / 2) + radius
-                            * Math.cos(Math.toRadians(angle))));
-            top = Math
-                    .round((float) (((layoutHeight / 2) - childHeight / 2) + radius
-                            * Math.sin(Math.toRadians(angle))));
-
-            child.layout(left, top, left + childWidth, top + childHeight);
-            angle += angleDelay;
-        }
+        circleHeight = getHeight();
+        circleWidth = getWidth();
+        setChildAngles();
     }
 
     /**
@@ -306,7 +260,7 @@ public class CircleLayout extends ViewGroup {
         Log.v(VIEW_LOG_TAG, "rotateViewToCenter");
         if (isRotating) {
             float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
-            float destAngle = (float) (firstChildPos - viewAngle);
+            float destAngle = (firstChildPos - viewAngle);
 
             if (destAngle < 0) {
                 destAngle += 360;
@@ -374,40 +328,37 @@ public class CircleLayout extends ViewGroup {
     }
 
     private void setChildAngles() {
-        int left, top, childCount = getChildCount();
+        int left, top, childWidth, childHeight, childCount = getChildCount();
         float angleDelay = 360.0f / childCount;
+        float halfAngle = angleDelay / 2;
         float localAngle = angle;
 
         for (int i = 0; i < childCount; i++) {
-            if (localAngle > 360) {
-                localAngle -= 360;
-            } else {
-                if (localAngle < 0) {
-                    localAngle += 360;
-                }
-            }
-
             final View child = getChildAt(i);
             if (child.getVisibility() == GONE) {
                 continue;
             }
 
-            int childWidth = child.getMeasuredWidth();
-            int childHeight = child.getMeasuredHeight();
+            if (localAngle > 360) {
+                localAngle -= 360;
+            } else if (localAngle < 0) {
+                localAngle += 360;
+            }
+
+            childWidth = child.getMeasuredWidth();
+            childHeight = child.getMeasuredHeight();
             left = Math
-                    .round((float) (((circleWidth / 2) - childWidth / 2) + radius
+                    .round((float) (((circleWidth / 2.0) - childWidth / 2.0) + radius
                             * Math.cos(Math.toRadians(localAngle))));
             top = Math
-                    .round((float) (((circleHeight / 2) - childHeight / 2) + radius
+                    .round((float) (((circleHeight / 2.0) - childHeight / 2.0) + radius
                             * Math.sin(Math.toRadians(localAngle))));
 
             child.setTag(localAngle);
 
-            // TODO Is there a better way than this halfangleDelay to prevent false selections?
             float distance = Math.abs(localAngle - firstChildPos);
-            float halfangleDelay = angleDelay / 2;
-            boolean isFirstItem = distance < halfangleDelay
-                    || distance > (360 - halfangleDelay);
+            boolean isFirstItem = distance < halfAngle
+                    || distance > (360 - halfAngle);
             if (isFirstItem && selectedView != child) {
                 selectedView = child;
                 if (onItemSelectedListener != null && isRotating) {
@@ -557,9 +508,9 @@ public class CircleLayout extends ViewGroup {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            int tappedViewsPostition = pointToPosition(e.getX(), e.getY());
-            if (tappedViewsPostition >= 0) {
-                tappedView = getChildAt(tappedViewsPostition);
+            int tappedViewsPosition = pointToChildPosition(e.getX(), e.getY());
+            if (tappedViewsPosition >= 0) {
+                tappedView = getChildAt(tappedViewsPosition);
                 tappedView.setPressed(true);
             } else {
                 // Determine if it was a center click
@@ -598,11 +549,11 @@ public class CircleLayout extends ViewGroup {
             return super.onSingleTapUp(e);
         }
 
-        private int pointToPosition(float x, float y) {
+        private int pointToChildPosition(float x, float y) {
             for (int i = 0; i < getChildCount(); i++) {
-                View item = (View) getChildAt(i);
-                if (item.getLeft() < x && item.getRight() > x
-                        & item.getTop() < y && item.getBottom() > y) {
+                View view = getChildAt(i);
+                if (view.getLeft() < x && view.getRight() > x
+                        & view.getTop() < y && view.getBottom() > y) {
                     return i;
                 }
             }
