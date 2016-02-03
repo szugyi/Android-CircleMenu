@@ -190,17 +190,17 @@ public class CircleLayout extends ViewGroup {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         Log.v(VIEW_LOG_TAG, "onMeasure");
+        // Measure child views first
         maxChildWidth = 0;
         maxChildHeight = 0;
 
-        // Measure once to find the maximum child size.
         int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(
                 MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);
         int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(
                 MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.AT_MOST);
 
-        final int count = getChildCount();
-        for (int i = 0; i < count; i++) {
+        final int childCount = getChildCount();
+        for (int i = 0; i < childCount; i++) {
             final View child = getChildAt(i);
             if (child.getVisibility() == GONE) {
                 continue;
@@ -209,30 +209,44 @@ public class CircleLayout extends ViewGroup {
             child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
 
             maxChildWidth = Math.max(maxChildWidth, child.getMeasuredWidth());
-            maxChildHeight = Math
-                    .max(maxChildHeight, child.getMeasuredHeight());
+            maxChildHeight = Math.max(maxChildHeight, child.getMeasuredHeight());
         }
 
-        // TODO This step was used to set all the children to have the same size;
-        // Should not be needed in the new implementation
+        // Then decide what size we want to be
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
 
-        // Measure again for each child to be exactly the same size.
-        childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(maxChildWidth,
-                MeasureSpec.EXACTLY);
-        childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(maxChildHeight,
-                MeasureSpec.EXACTLY);
+        int width;
+        int height;
 
-        for (int i = 0; i < count; i++) {
-            final View child = getChildAt(i);
-            if (child.getVisibility() == GONE) {
-                continue;
-            }
-
-            // child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+        //Measure Width
+        if (widthMode == MeasureSpec.EXACTLY) {
+            //Must be this size
+            width = widthSize;
+        } else if (widthMode == MeasureSpec.AT_MOST) {
+            //Can't be bigger than...
+            width = Math.min(widthSize, heightSize);
+        } else {
+            //Be whatever you want
+            width = maxChildWidth * 3;
         }
 
-        setMeasuredDimension(resolveSize(maxChildWidth, widthMeasureSpec),
-                resolveSize(maxChildHeight, heightMeasureSpec));
+        //Measure Height
+        if (heightMode == MeasureSpec.EXACTLY) {
+            //Must be this size
+            height = heightSize;
+        } else if (heightMode == MeasureSpec.AT_MOST) {
+            //Can't be bigger than...
+            height = Math.min(heightSize, widthSize);
+        } else {
+            //Be whatever you want
+            height = maxChildHeight * 3;
+        }
+
+        setMeasuredDimension(resolveSize(width, widthMeasureSpec),
+                resolveSize(height, heightMeasureSpec));
     }
 
     @Override

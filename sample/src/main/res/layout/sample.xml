@@ -22,8 +22,8 @@
 
     <com.szugyi.circlemenu.view.CircleLayout
         android:id="@+id/main_circle_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/main_selected_textView"
         android:layout_gravity="center_horizontal" >
 
