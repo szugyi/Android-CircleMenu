@@ -16,8 +16,10 @@ package com.szugyi.circlemenusample;
  * limitations under the License.
  */
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.os.Looper;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -31,12 +33,12 @@ import com.szugyi.circlemenu.view.CircleLayout.OnItemClickListener;
 import com.szugyi.circlemenu.view.CircleLayout.OnItemSelectedListener;
 import com.szugyi.circlemenu.view.CircleLayout.OnRotationFinishedListener;
 
-public class SampleActivity extends Activity implements OnItemSelectedListener,
+public class SampleActivity extends AppCompatActivity implements OnItemSelectedListener,
         OnItemClickListener, OnRotationFinishedListener, OnCenterClickListener {
     public static final String ARG_LAYOUT = "layout";
 
+    private CircleLayout circleLayout;
     private TextView selectedTextView;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,16 +50,16 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
         setContentView(layoutId);
 
         // Set listeners
-        CircleLayout circleMenu = (CircleLayout) findViewById(R.id.main_circle_layout);
-        circleMenu.setOnItemSelectedListener(this);
-        circleMenu.setOnItemClickListener(this);
-        circleMenu.setOnRotationFinishedListener(this);
-        circleMenu.setOnCenterClickListener(this);
+        circleLayout = (CircleLayout) findViewById(R.id.circle_layout);
+        circleLayout.setOnItemSelectedListener(this);
+        circleLayout.setOnItemClickListener(this);
+        circleLayout.setOnRotationFinishedListener(this);
+        circleLayout.setOnCenterClickListener(this);
 
-        selectedTextView = (TextView) findViewById(R.id.main_selected_textView);
+        selectedTextView = (TextView) findViewById(R.id.selected_textView);
 
         String name = null;
-        View view = circleMenu.getSelectedItem();
+        View view = circleLayout.getSelectedItem();
         if (view instanceof CircleImageView) {
             name = ((CircleImageView) view).getName();
         }
@@ -66,12 +68,22 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
 
     @Override
     public void onItemSelected(View view) {
-        String name = null;
+        boolean isMain = Looper.myLooper() == Looper.getMainLooper();
+        Log.v("SampleActivity", "is it the main thread? " + String.valueOf(isMain));
+
+        final String name;
         if (view instanceof CircleImageView) {
             name = ((CircleImageView) view).getName();
+        } else {
+            name = null;
         }
 
+        //selectedTextView.post(new Runnable() {
+        //  @Override
+        //public void run() {
         selectedTextView.setText(name);
+        //    }
+        //});
 
         switch (view.getId()) {
             case R.id.main_calendar_image:
@@ -80,11 +92,11 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
             case R.id.main_cloud_image:
                 // Handle cloud selection
                 break;
-            case R.id.main_facebook_image:
-                // Handle facebook selection
-                break;
             case R.id.main_key_image:
                 // Handle key selection
+                break;
+            case R.id.main_mail_image:
+                // Handle facebook selection
                 break;
             case R.id.main_profile_image:
                 // Handle profile selection
@@ -102,9 +114,8 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
             name = ((CircleImageView) view).getName();
         }
 
-        Toast.makeText(getApplicationContext(),
-                getResources().getString(R.string.start_app) + " " + name,
-                Toast.LENGTH_SHORT).show();
+        String text = getResources().getString(R.string.start_app, name);
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
 
         switch (view.getId()) {
             case R.id.main_calendar_image:
@@ -113,11 +124,11 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
             case R.id.main_cloud_image:
                 // Handle cloud click
                 break;
-            case R.id.main_facebook_image:
-                // Handle facebook click
-                break;
             case R.id.main_key_image:
                 // Handle key click
+                break;
+            case R.id.main_mail_image:
+                // Handle facebook click
                 break;
             case R.id.main_profile_image:
                 // Handle profile click
@@ -130,20 +141,27 @@ public class SampleActivity extends Activity implements OnItemSelectedListener,
 
     @Override
     public void onRotationFinished(View view) {
-        String name = null;
-        if (view instanceof CircleImageView) {
-            name = ((CircleImageView) view).getName();
-        }
-
-        Animation animation = new RotateAnimation(0, 360, view.getWidth() / 2,
-                view.getHeight() / 2);
+        Animation animation = new RotateAnimation(0, 360, view.getWidth() / 2, view.getHeight() / 2);
         animation.setDuration(250);
         view.startAnimation(animation);
     }
 
     @Override
     public void onCenterClick() {
-        Toast.makeText(getApplicationContext(), R.string.center_click,
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), R.string.center_click, Toast.LENGTH_SHORT).show();
+    }
+
+    public void onAddClick(View view) {
+        CircleImageView newMenu = new CircleImageView(this);
+        newMenu.setBackgroundResource(R.drawable.circle);
+        newMenu.setImageResource(R.drawable.ic_voice);
+        newMenu.setName(getString(R.string.voice_search));
+        circleLayout.addView(newMenu);
+    }
+
+    public void onRemoveClick(View view) {
+        if (circleLayout.getChildCount() > 0) {
+            circleLayout.removeViewAt(circleLayout.getChildCount() - 1);
+        }
     }
 }

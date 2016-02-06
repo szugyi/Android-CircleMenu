@@ -18,17 +18,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SampleActivity" >
+    tools:context=".SampleActivity">
 
+    <!-- Here you can see all the attributes of the CircleLayout in use
+     circleBackground is resized to fit in the Circle
+     firstChildPosition determines the location of the first child:
+        East: to the right
+        South: to the bottom (default)
+        West: to the left
+        North: to the top
+     isRotating: if set to false, the children cannot be moved by dragging or by tapping them. default: true
+     speed: the speed of the rotation when the isRotating attribute is set to true. default: 25 -->
     <com.szugyi.circlemenu.view.CircleLayout
         android:id="@+id/circle_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/selected_textView"
         android:layout_gravity="center_horizontal"
-        circle:firstChildPosition="South"
-        circle:isRotating="false"
-        circle:speed="25" >
+        circle:circleBackground="@drawable/bg"
+        circle:firstChildPosition="East"
+        circle:isRotating="true"
+        circle:speed="10">
 
         <include layout="@layout/menu_items" />
     </com.szugyi.circlemenu.view.CircleLayout>

@@ -19,13 +19,10 @@
     <string name="app_name">Circle Menu</string>
     <!-- Main list items -->
     <string name="main_sample">Sample Circle menu</string>
-    <string name="main_fast">Fast rotation</string>
     <string name="main_no_rotation">No rotation</string>
-    <string name="main_west">Orientation to west</string>
-    <string name="main_background">Circle menu with background</string>
-    <string name="main_7_icons">7 Icons</string>
-    <string name="main_8_icons">8 Icons</string>
+    <string name="main_attributes">XML attributes</string>
     <string name="main_any_view">Any view</string>
+    <string name="main_dynamic_children">Dynamic children</string>
     <!-- Menu names -->
     <string name="business_card">Business Card</string>
     <string name="calendar">Calendar</string>
@@ -36,8 +33,11 @@
     <string name="profile">Profile</string>
     <string name="tag">Tag</string>
     <string name="voice_search">Voice Search</string>
+    <!-- Buttons -->
+    <string name="button_add">Add child</string>
+    <string name="button_remove">Remove child</string>
     <!-- Toasts -->
-    <string name="start_app">Starting application:</string>
+    <string name="start_app">Starting application: %s</string>
     <string name="center_click">Center has been clicked</string>
 
 </resources>

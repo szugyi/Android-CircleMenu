@@ -14,21 +14,44 @@
    limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:circle="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SampleActivity" >
+    android:paddingTop="8dp"
+    tools:context=".SampleActivity">
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/placeholder"
+        android:onClick="onAddClick"
+        android:text="@string/button_add" />
+
+    <View
+        android:id="@+id/placeholder"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/remove_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:onClick="onRemoveClick"
+        android:layout_toRightOf="@+id/placeholder"
+        android:text="@string/button_remove" />
 
     <com.szugyi.circlemenu.view.CircleLayout
         android:id="@+id/circle_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_above="@+id/selected_textView"
-        android:layout_gravity="center_horizontal"
-        circle:firstChildPosition="South"
-        circle:isRotating="false"
-        circle:speed="25" >
+        android:layout_below="@id/remove_button"
+        android:layout_gravity="center_horizontal">
 
         <include layout="@layout/menu_items" />
     </com.szugyi.circlemenu.view.CircleLayout>
