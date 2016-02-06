@@ -48,7 +48,7 @@ public class CircleLayout extends ViewGroup {
     private OnRotationFinishedListener onRotationFinishedListener = null;
 
     // Background image
-    private Bitmap imageOriginal, imageScaled;
+    private Bitmap originalBackground, scaledBackground;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
@@ -100,27 +100,21 @@ public class CircleLayout extends ViewGroup {
         quadrantTouched = new boolean[]{false, false, false, false, false};
 
         if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs,
-                    R.styleable.CircleLayout);
+            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
 
             // The angle where the first menu item will be drawn
-            angle = a.getInt(R.styleable.CircleLayout_firstChildPosition,
-                    (int) angle);
+            angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
             firstChildPos = angle;
-
             speed = a.getInt(R.styleable.CircleLayout_speed, speed);
-            isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating,
-                    isRotating);
+            isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
 
-            if (imageOriginal == null) {
-                int picId = a.getResourceId(
-                        R.styleable.CircleLayout_circleBackground, -1);
+            if (originalBackground == null) {
+                int picId = a.getResourceId(R.styleable.CircleLayout_circleBackground, -1);
 
                 // If a background image was set as an attribute,
                 // retrieve the image
                 if (picId != -1) {
-                    imageOriginal = BitmapFactory.decodeResource(
-                            getResources(), picId);
+                    originalBackground = BitmapFactory.decodeResource(getResources(), picId);
                 }
             }
 
@@ -159,29 +153,29 @@ public class CircleLayout extends ViewGroup {
         circleHeight = getHeight();
         circleWidth = getWidth();
 
-        if (imageOriginal != null) {
+        if (originalBackground != null) {
             // Scaling the size of the background image
-            if (imageScaled == null) {
+            if (scaledBackground == null) {
                 float diameter = radius * 2;
-                float sx = diameter / imageOriginal
+                float sx = diameter / originalBackground
                         .getWidth();
-                float sy = diameter / imageOriginal
+                float sy = diameter / originalBackground
                         .getHeight();
 
                 Matrix matrix = new Matrix();
                 matrix.postScale(sx, sy);
 
-                imageScaled = Bitmap.createBitmap(imageOriginal, 0, 0,
-                        imageOriginal.getWidth(), imageOriginal.getHeight(),
+                scaledBackground = Bitmap.createBitmap(originalBackground, 0, 0,
+                        originalBackground.getWidth(), originalBackground.getHeight(),
                         matrix, false);
             }
 
-            if (imageScaled != null) {
+            if (scaledBackground != null) {
                 // Move the background to the center
-                int cx = (circleWidth - imageScaled.getWidth()) / 2;
-                int cy = (circleHeight - imageScaled.getHeight()) / 2;
+                int cx = (circleWidth - scaledBackground.getWidth()) / 2;
+                int cy = (circleHeight - scaledBackground.getHeight()) / 2;
 
-                canvas.drawBitmap(imageScaled, cx, cy, null);
+                canvas.drawBitmap(scaledBackground, cx, cy, null);
             }
         }
     }

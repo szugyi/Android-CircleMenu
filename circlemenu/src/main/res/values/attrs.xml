@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
    Copyright 2013 Csaba Szugyiczki
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +14,18 @@
    limitations under the License.
 -->
 <resources>
-
     <declare-styleable name="CircleLayout">
-        <attr name="circleBackground" format="integer" />
+        <attr name="circleBackground" format="reference" />
+        <attr name="isRotating" format="boolean" />
+        <attr name="speed" format="integer" />
         <attr name="firstChildPosition">
             <enum name="East" value="0" />
             <enum name="South" value="90" />
             <enum name="West" value="180" />
             <enum name="North" value="270" />
         </attr>
-        <attr name="isRotating" format="boolean" />
-        <attr name="speed" format="integer" />
     </declare-styleable>
+
     <declare-styleable name="CircleImageView">
         <attr name="name" format="string" />
     </declare-styleable>
