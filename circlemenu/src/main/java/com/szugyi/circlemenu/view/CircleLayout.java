@@ -25,7 +25,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -148,6 +147,36 @@ public class CircleLayout extends ViewGroup {
     }
 
     @Override
+    public void removeView(View view) {
+        super.removeView(view);
+        updateAngle();
+    }
+
+    @Override
+    public void removeViewAt(int index) {
+        super.removeViewAt(index);
+        updateAngle();
+    }
+
+    @Override
+    public void removeViews(int start, int count) {
+        super.removeViews(start, count);
+        updateAngle();
+    }
+
+    @Override
+    public void addView(View child, int index, LayoutParams params) {
+        super.addView(child, index, params);
+        updateAngle();
+    }
+
+    private void updateAngle() {
+        // Update the position of the views, so we know which is the selected
+        setChildAngles();
+        rotateViewToCenter(selectedView);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         // The sizes of the ViewGroup
         circleHeight = getHeight();
@@ -182,7 +211,6 @@ public class CircleLayout extends ViewGroup {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        Log.v(VIEW_LOG_TAG, "onMeasure");
         // Measure child views first
         maxChildWidth = 0;
         maxChildHeight = 0;
@@ -244,13 +272,11 @@ public class CircleLayout extends ViewGroup {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        Log.v(VIEW_LOG_TAG, "onLayout");
         int layoutWidth = r - l;
         int layoutHeight = b - t;
 
         radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
                 : layoutHeight / 3;
-
 
         circleHeight = getHeight();
         circleWidth = getWidth();
@@ -263,7 +289,6 @@ public class CircleLayout extends ViewGroup {
      * @param view the view to be rotated
      */
     private void rotateViewToCenter(View view) {
-        Log.v(VIEW_LOG_TAG, "rotateViewToCenter");
         if (isRotating) {
             float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
             float destAngle = (firstChildPos - viewAngle);
@@ -315,8 +340,7 @@ public class CircleLayout extends ViewGroup {
             child.setTag(localAngle);
 
             float distance = Math.abs(localAngle - firstChildPos);
-            boolean isFirstItem = distance < halfAngle
-                    || distance > (360 - halfAngle);
+            boolean isFirstItem = distance <= halfAngle || distance >= (360 - halfAngle);
             if (isFirstItem && selectedView != child) {
                 selectedView = child;
                 if (onItemSelectedListener != null && isRotating) {
@@ -330,13 +354,11 @@ public class CircleLayout extends ViewGroup {
     }
 
     private void animateTo(float endDegree, long duration) {
-        if (animator != null && animator.isRunning()
-                || Math.abs(angle - endDegree) < 1) {
+        if (animator != null && animator.isRunning() || Math.abs(angle - endDegree) < 1) {
             return;
         }
 
-        animator = ObjectAnimator.ofFloat(CircleLayout.this, "angle", angle,
-                endDegree);
+        animator = ObjectAnimator.ofFloat(CircleLayout.this, "angle", angle, endDegree);
         animator.setDuration(duration);
         animator.setInterpolator(new DecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
@@ -457,8 +479,7 @@ public class CircleLayout extends ViewGroup {
     private class MyGestureListener extends SimpleOnGestureListener {
 
         @Override
-        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                               float velocityY) {
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             if (!isRotating) {
                 return false;
             }
@@ -493,6 +514,11 @@ public class CircleLayout extends ViewGroup {
         }
 
         private float getCenteredAngle(float angle) {
+            if (getChildCount() == 0) {
+                // Prevent divide by zero
+                return angle;
+            }
+
             float angleDelay = 360 / getChildCount();
             float localAngle = angle % 360;
 
@@ -503,7 +529,7 @@ public class CircleLayout extends ViewGroup {
             for (float i = firstChildPos; i < firstChildPos + 360; i += angleDelay) {
                 float locI = i % 360;
                 float diff = localAngle - locI;
-                if (Math.abs(diff) < angleDelay / 2) {
+                if (Math.abs(diff) < angleDelay) {
                     angle -= diff;
                     break;
                 }

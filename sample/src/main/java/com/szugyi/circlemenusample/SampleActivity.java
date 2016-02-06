@@ -17,9 +17,7 @@ package com.szugyi.circlemenusample;
  */
 
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
@@ -68,9 +66,6 @@ public class SampleActivity extends AppCompatActivity implements OnItemSelectedL
 
     @Override
     public void onItemSelected(View view) {
-        boolean isMain = Looper.myLooper() == Looper.getMainLooper();
-        Log.v("SampleActivity", "is it the main thread? " + String.valueOf(isMain));
-
         final String name;
         if (view instanceof CircleImageView) {
             name = ((CircleImageView) view).getName();
@@ -78,12 +73,7 @@ public class SampleActivity extends AppCompatActivity implements OnItemSelectedL
             name = null;
         }
 
-        //selectedTextView.post(new Runnable() {
-        //  @Override
-        //public void run() {
         selectedTextView.setText(name);
-        //    }
-        //});
 
         switch (view.getId()) {
             case R.id.main_calendar_image:
@@ -96,7 +86,7 @@ public class SampleActivity extends AppCompatActivity implements OnItemSelectedL
                 // Handle key selection
                 break;
             case R.id.main_mail_image:
-                // Handle facebook selection
+                // Handle mail selection
                 break;
             case R.id.main_profile_image:
                 // Handle profile selection
@@ -128,7 +118,7 @@ public class SampleActivity extends AppCompatActivity implements OnItemSelectedL
                 // Handle key click
                 break;
             case R.id.main_mail_image:
-                // Handle facebook click
+                // Handle mail click
                 break;
             case R.id.main_profile_image:
                 // Handle profile click
