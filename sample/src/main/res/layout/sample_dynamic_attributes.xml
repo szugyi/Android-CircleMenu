@@ -14,19 +14,27 @@
    limitations under the License.
 -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:circle="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SampleActivity" >
+    tools:context=".SampleDynamicActivity">
+
+    <TextView
+        android:id="@+id/desc_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="8dp"
+        android:text="You can change the attributes of the CircleLayout from the menu in the ActionBar"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <com.szugyi.circlemenu.view.CircleLayout
         android:id="@+id/circle_layout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/desc_textView"
         android:layout_above="@+id/selected_textView"
-        android:layout_gravity="center_horizontal"
-        circle:isRotating="false" >
+        android:layout_gravity="center_horizontal">
 
         <include layout="@layout/menu_items" />
     </com.szugyi.circlemenu.view.CircleLayout>
@@ -35,10 +43,11 @@
         android:id="@+id/selected_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="50dp"
+        android:gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
 
 </RelativeLayout>

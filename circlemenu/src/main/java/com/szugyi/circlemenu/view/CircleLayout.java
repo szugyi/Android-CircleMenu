@@ -34,12 +34,28 @@ import android.view.animation.DecelerateInterpolator;
 
 import com.szugyi.circlemenu.R;
 
+import java.security.InvalidParameterException;
+
 /**
  * @author Szugyi Creates a rotatable circle menu which can be parameterized by
  *         custom attributes. Handles touches and gestures to make the menu
  *         rotatable, and to make the menu items selectable and clickable.
  */
 public class CircleLayout extends ViewGroup {
+    public enum FirstChildPosition {
+        EAST(0), SOUTH(90), WEST(180), NORTH(270);
+
+        private int angle;
+
+        public int getAngle() {
+            return angle;
+        }
+
+        FirstChildPosition(int angle) {
+            this.angle = angle;
+        }
+    }
+
     // Event listeners
     private OnItemClickListener onItemClickListener = null;
     private OnItemSelectedListener onItemSelectedListener = null;
@@ -65,7 +81,7 @@ public class CircleLayout extends ViewGroup {
     // Settings of the ViewGroup
     private int speed = 25;
     private float angle = 90;
-    private float firstChildPos = 90;
+    private FirstChildPosition firstChildPosition = FirstChildPosition.SOUTH;
     private boolean isRotating = true;
 
     // Tapped and selected child
@@ -101,11 +117,18 @@ public class CircleLayout extends ViewGroup {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
 
-            // The angle where the first menu item will be drawn
-            angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
-            firstChildPos = angle;
+
             speed = a.getInt(R.styleable.CircleLayout_speed, speed);
             isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
+
+            // The angle where the first menu item will be drawn
+            angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
+            for (FirstChildPosition pos : FirstChildPosition.values()) {
+                if (pos.getAngle() == angle) {
+                    firstChildPosition = pos;
+                    break;
+                }
+            }
 
             if (originalBackground == null) {
                 int picId = a.getResourceId(R.styleable.CircleLayout_circleBackground, -1);
@@ -131,6 +154,40 @@ public class CircleLayout extends ViewGroup {
     public void setAngle(float angle) {
         this.angle = angle % 360;
         setChildAngles();
+    }
+
+    public int getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(int speed) {
+        if (speed <= 0) {
+            throw new InvalidParameterException("Speed must be a positive integer number");
+        }
+        this.speed = speed;
+    }
+
+    public boolean isRotating() {
+        return isRotating;
+    }
+
+    public void setRotating(boolean isRotating) {
+        this.isRotating = isRotating;
+    }
+
+    public FirstChildPosition getFirstChildPosition() {
+        return firstChildPosition;
+    }
+
+    public void setFirstChildPosition(FirstChildPosition firstChildPosition) {
+        this.firstChildPosition = firstChildPosition;
+        if (selectedView != null) {
+            if (isRotating) {
+                rotateViewToCenter(selectedView);
+            } else {
+                setAngle(firstChildPosition.getAngle());
+            }
+        }
     }
 
     /**
@@ -291,7 +348,7 @@ public class CircleLayout extends ViewGroup {
     private void rotateViewToCenter(View view) {
         if (isRotating) {
             float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
-            float destAngle = (firstChildPos - viewAngle);
+            float destAngle = (firstChildPosition.getAngle() - viewAngle);
 
             if (destAngle < 0) {
                 destAngle += 360;
@@ -339,7 +396,7 @@ public class CircleLayout extends ViewGroup {
 
             child.setTag(localAngle);
 
-            float distance = Math.abs(localAngle - firstChildPos);
+            float distance = Math.abs(localAngle - firstChildPosition.getAngle());
             boolean isFirstItem = distance <= halfAngle || distance >= (360 - halfAngle);
             if (isFirstItem && selectedView != child) {
                 selectedView = child;
@@ -526,7 +583,7 @@ public class CircleLayout extends ViewGroup {
                 localAngle = 360 + localAngle;
             }
 
-            for (float i = firstChildPos; i < firstChildPos + 360; i += angleDelay) {
+            for (float i = firstChildPosition.getAngle(); i < firstChildPosition.getAngle() + 360; i += angleDelay) {
                 float locI = i % 360;
                 float diff = localAngle - locI;
                 if (Math.abs(diff) < angleDelay) {

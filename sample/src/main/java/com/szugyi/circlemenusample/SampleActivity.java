@@ -35,8 +35,8 @@ public class SampleActivity extends AppCompatActivity implements OnItemSelectedL
         OnItemClickListener, OnRotationFinishedListener, OnCenterClickListener {
     public static final String ARG_LAYOUT = "layout";
 
-    private CircleLayout circleLayout;
-    private TextView selectedTextView;
+    protected CircleLayout circleLayout;
+    protected TextView selectedTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

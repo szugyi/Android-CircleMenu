@@ -4,6 +4,7 @@
         <item>@string/main_sample</item>
         <item>@string/main_no_rotation</item>
         <item>@string/main_attributes</item>
+        <item>@string/main_dynamic_attributes</item>
         <item>@string/main_any_view</item>
         <item>@string/main_dynamic_children</item>
     </string-array>

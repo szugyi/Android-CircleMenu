@@ -30,9 +30,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 intent.putExtra(SampleActivity.ARG_LAYOUT, R.layout.sample_attributes);
                 break;
             case 3:
-                intent.putExtra(SampleActivity.ARG_LAYOUT, R.layout.sample_any_items);
+                intent = new Intent(this, SampleDynamicActivity.class);
+                intent.putExtra(SampleActivity.ARG_LAYOUT, R.layout.sample_dynamic_attributes);
                 break;
             case 4:
+                intent.putExtra(SampleActivity.ARG_LAYOUT, R.layout.sample_any_items);
+                break;
+            case 5:
                 intent.putExtra(SampleActivity.ARG_LAYOUT, R.layout.sample_dynamic_children);
                 break;
         }

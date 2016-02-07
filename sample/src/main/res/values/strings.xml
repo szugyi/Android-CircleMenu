@@ -21,6 +21,7 @@
     <string name="main_sample">Sample Circle menu</string>
     <string name="main_no_rotation">No rotation</string>
     <string name="main_attributes">XML attributes</string>
+    <string name="main_dynamic_attributes">Dynamic attributes</string>
     <string name="main_any_view">Any view</string>
     <string name="main_dynamic_children">Dynamic children</string>
     <!-- Menu names -->
@@ -36,6 +37,15 @@
     <!-- Buttons -->
     <string name="button_add">Add child</string>
     <string name="button_remove">Remove child</string>
+    <!-- Menu items -->
+    <string name="speed">speed</string>
+    <string name="is_rotating">isRotating</string>
+    <string name="first_child_position">firstChildPosition</string>
+    <!-- Dialog -->
+    <string name="dialog_speed">Set speed attribute</string>
+    <string name="dialog_speed_value">value: %d</string>
+    <string name="dialog_is_rotating">Set isRotating attribute</string>
+    <string name="dialog_first_child_position">Set the firstChildPosition attribute</string>
     <!-- Toasts -->
     <string name="start_app">Starting application: %s</string>
     <string name="center_click">Center has been clicked</string>
