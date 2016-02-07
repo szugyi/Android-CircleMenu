@@ -2,48 +2,60 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:circle="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <com.szugyi.circlemenu.view.CircleImageView
         android:id="@+id/main_calendar_image"
-        circle:name="@string/calendar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_calendar" />
+        android:background="@drawable/circle"
+        android:elevation="2dp"
+        android:src="@drawable/ic_calendar"
+        circle:name="@string/calendar" />
 
     <com.szugyi.circlemenu.view.CircleImageView
         android:id="@+id/main_cloud_image"
-        circle:name="@string/cloud"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_cloud" />
+        android:background="@drawable/circle"
+        android:elevation="2dp"
+        android:src="@drawable/ic_cloud"
+        circle:name="@string/cloud" />
+
 
     <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_facebook_image"
-        circle:name="@string/facebook"
+        android:id="@+id/main_mail_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_facebook" />
+        android:background="@drawable/circle"
+        android:elevation="2dp"
+        android:src="@drawable/ic_mail"
+        circle:name="@string/mail" />
 
     <com.szugyi.circlemenu.view.CircleImageView
         android:id="@+id/main_key_image"
-        circle:name="@string/key"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_key" />
+        android:background="@drawable/circle"
+        android:src="@drawable/ic_key"
+        circle:name="@string/key" />
 
     <com.szugyi.circlemenu.view.CircleImageView
         android:id="@+id/main_profile_image"
-        circle:name="@string/profile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_profile" />
+        android:background="@drawable/circle"
+        android:elevation="2dp"
+        android:src="@drawable/ic_profile"
+        circle:name="@string/profile" />
 
     <com.szugyi.circlemenu.view.CircleImageView
         android:id="@+id/main_tap_image"
-        circle:name="@string/tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/icon_tag" />
+        android:background="@drawable/circle"
+        android:elevation="2dp"
+        android:src="@drawable/ic_tag"
+        circle:name="@string/tag" />
 
 </merge>

@@ -2,13 +2,11 @@
 <resources>
     <string-array name="main_list">
         <item>@string/main_sample</item>
-        <item>@string/main_fast</item>
         <item>@string/main_no_rotation</item>
-        <item>@string/main_west</item>
-        <item>@string/main_background</item>
-        <item>@string/main_7_icons</item>
-        <item>@string/main_8_icons</item>
+        <item>@string/main_attributes</item>
+        <item>@string/main_dynamic_attributes</item>
         <item>@string/main_any_view</item>
+        <item>@string/main_dynamic_children</item>
     </string-array>
     
 </resources>
