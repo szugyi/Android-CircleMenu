@@ -345,7 +345,7 @@ public class CircleLayout extends ViewGroup {
      *
      * @param view the view to be rotated
      */
-    private void rotateViewToCenter(View view) {
+    public void rotateViewToCenter(View view) {
         if (isRotating) {
             float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
             float destAngle = (firstChildPosition.getAngle() - viewAngle);
