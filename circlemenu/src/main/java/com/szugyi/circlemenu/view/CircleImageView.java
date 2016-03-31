@@ -33,22 +33,6 @@ import com.szugyi.circlemenu.R;
 public class CircleImageView extends ImageView {
 	// The name of the view
 	private String name;
-	
-	/**
-	 * Return the name of the view.
-	 * @return Returns the name of the view.
-	 */
-	public String getName(){
-		return name;
-	}
-	
-	/**
-	 * Set the name of the view.
-	 * @param name The name to be set for the view.
-	 */
-	public void setName(String name){
-		this.name = name;
-	}
 
 	public CircleImageView(Context context) {
 		this(context, null);
@@ -68,5 +52,22 @@ public class CircleImageView extends ImageView {
 			array.recycle();
 		}
 	}
+
+	/**
+	 * Return the name of the view.
+	 * @return Returns the name of the view.
+	 */
+	public String getName(){
+		return name;
+	}
+
+	/**
+	 * Set the name of the view.
+	 * @param name The name to be set for the view.
+	 */
+	public void setName(String name){
+		this.name = name;
+	}
+
 
 }
