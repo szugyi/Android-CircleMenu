@@ -47,13 +47,14 @@ public class CircleLayout extends ViewGroup {
 
         private int angle;
 
+        FirstChildPosition(int angle) {
+            this.angle = angle;
+        }
+
         public int getAngle() {
             return angle;
         }
 
-        FirstChildPosition(int angle) {
-            this.angle = angle;
-        }
     }
 
     // Event listeners
@@ -83,6 +84,10 @@ public class CircleLayout extends ViewGroup {
     private float angle = 90;
     private FirstChildPosition firstChildPosition = FirstChildPosition.SOUTH;
     private boolean isRotating = true;
+
+    // Touch helpers
+    private double touchStartAngle;
+    private boolean didMove = false;
 
     // Tapped and selected child
     private View selectedView = null;
@@ -348,7 +353,7 @@ public class CircleLayout extends ViewGroup {
     public void rotateViewToCenter(View view) {
         if (isRotating) {
             float viewAngle = view.getTag() != null ? (Float) view.getTag() : 0;
-            float destAngle = (firstChildPosition.getAngle() - viewAngle);
+            float destAngle = firstChildPosition.getAngle() - viewAngle;
 
             if (destAngle < 0) {
                 destAngle += 360;
@@ -358,7 +363,7 @@ public class CircleLayout extends ViewGroup {
                 destAngle = -1 * (360 - destAngle);
             }
 
-            animateTo(angle + destAngle, 7500 / speed);
+            animateTo(angle + destAngle, 7500L / speed);
         }
     }
 
@@ -488,10 +493,6 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
-    // Touch helpers
-    private double touchStartAngle;
-    private boolean didMove = false;
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (isEnabled()) {
@@ -520,6 +521,8 @@ public class CircleLayout extends ViewGroup {
                         if (didMove) {
                             rotateViewToCenter(selectedView);
                         }
+                        break;
+                    default:
                         break;
                 }
             }
@@ -559,12 +562,12 @@ public class CircleLayout extends ViewGroup {
                 // the inverted rotations
                 animateTo(
                         getCenteredAngle(angle - (velocityX + velocityY) / 25),
-                        25000 / speed);
+                        25000L / speed);
             } else {
                 // the normal rotation
                 animateTo(
                         getCenteredAngle(angle + (velocityX + velocityY) / 25),
-                        25000 / speed);
+                        25000L / speed);
             }
 
             return true;
@@ -604,8 +607,8 @@ public class CircleLayout extends ViewGroup {
                 tappedView.setPressed(true);
             } else {
                 // Determine if it was a center click
-                float centerX = circleWidth / 2;
-                float centerY = circleHeight / 2;
+                float centerX = circleWidth / 2F;
+                float centerY = circleHeight / 2F;
 
                 if (onCenterClickListener != null
                         && e.getX() < centerX + radius - (maxChildWidth / 2)
