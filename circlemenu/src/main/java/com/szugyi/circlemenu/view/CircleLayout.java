@@ -289,7 +289,7 @@ public class CircleLayout extends ViewGroup {
                 continue;
             }
 
-            child.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+            measureChild(child, childWidthMeasureSpec, childHeightMeasureSpec);
 
             maxChildWidth = Math.max(maxChildWidth, child.getMeasuredWidth());
             maxChildHeight = Math.max(maxChildHeight, child.getMeasuredHeight());

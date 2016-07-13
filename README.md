@@ -13,12 +13,12 @@ Grab via Maven
 <dependency>
     <groupId>com.github.szugyi</groupId>
     <artifactId>Android-CircleMenu</artifactId>
-    <version>1.1.1</version>
+    <version>1.1.2</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.github.szugyi:Android-CircleMenu:1.1.1'
+compile 'com.github.szugyi:Android-CircleMenu:1.1.2'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
