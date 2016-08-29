@@ -41,7 +41,7 @@ EventListeners
 
 Changelog
 ---------
-[CHANGELOG.md](./CHANGELOG.md)
+Description about the changes made to each version of the project can be found in the [CHANGELOG.md](./CHANGELOG.md) file.
 
 Credits
 -------
