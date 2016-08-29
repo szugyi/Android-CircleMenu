@@ -39,6 +39,10 @@ EventListeners
 * `OnCenterClickListener` - Called when the center of the CircleLayout is tapped.
 * `OnRotationFinishedListener` -  If the `isRotating` attribute is set to true, then it is called when the rotation is finished, and passes the view which is on the `firstChildPosition`. Otherwise it is never called.
 
+Changelog
+---------
+[CHANGELOG.md](./CHANGELOG.md)
+
 Credits
 -------
 Special thanks to [Balázs Varga](https://github.com/warnyul), who helped me during the implementation of this custom view.

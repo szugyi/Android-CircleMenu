@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 - Changelog has been added to keep track of changes of the project.
 
+### Removed
+- CircleLayout no longer has a circleBackground attribute.
+
 ## [1.1.2] - 2016-07-13
 ### Fixed
 - Incorrect measurement of child views bug fixed.

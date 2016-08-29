@@ -20,10 +20,6 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -62,9 +58,6 @@ public class CircleLayout extends ViewGroup {
     private OnItemSelectedListener onItemSelectedListener = null;
     private OnCenterClickListener onCenterClickListener = null;
     private OnRotationFinishedListener onRotationFinishedListener = null;
-
-    // Background image
-    private Bitmap originalBackground, scaledBackground;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
@@ -132,16 +125,6 @@ public class CircleLayout extends ViewGroup {
                 if (pos.getAngle() == angle) {
                     firstChildPosition = pos;
                     break;
-                }
-            }
-
-            if (originalBackground == null) {
-                int picId = a.getResourceId(R.styleable.CircleLayout_circleBackground, -1);
-
-                // If a background image was set as an attribute,
-                // retrieve the image
-                if (picId != -1) {
-                    originalBackground = BitmapFactory.decodeResource(getResources(), picId);
                 }
             }
 
@@ -236,39 +219,6 @@ public class CircleLayout extends ViewGroup {
         // Update the position of the views, so we know which is the selected
         setChildAngles();
         rotateViewToCenter(selectedView);
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        // The sizes of the ViewGroup
-        circleHeight = getHeight();
-        circleWidth = getWidth();
-
-        if (originalBackground != null) {
-            // Scaling the size of the background image
-            if (scaledBackground == null) {
-                float diameter = radius * 2;
-                float sx = diameter / originalBackground
-                        .getWidth();
-                float sy = diameter / originalBackground
-                        .getHeight();
-
-                Matrix matrix = new Matrix();
-                matrix.postScale(sx, sy);
-
-                scaledBackground = Bitmap.createBitmap(originalBackground, 0, 0,
-                        originalBackground.getWidth(), originalBackground.getHeight(),
-                        matrix, false);
-            }
-
-            if (scaledBackground != null) {
-                // Move the background to the center
-                int cx = (circleWidth - scaledBackground.getWidth()) / 2;
-                int cy = (circleHeight - scaledBackground.getHeight()) / 2;
-
-                canvas.drawBitmap(scaledBackground, cx, cy, null);
-            }
-        }
     }
 
     @Override
