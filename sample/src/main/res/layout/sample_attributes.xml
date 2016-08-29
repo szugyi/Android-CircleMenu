@@ -37,6 +37,7 @@
         android:layout_gravity="center_horizontal"
         circle:firstChildPosition="East"
         circle:isRotating="true"
+        circle:radius="80dp"
         circle:speed="10">
 
         <include layout="@layout/menu_items" />

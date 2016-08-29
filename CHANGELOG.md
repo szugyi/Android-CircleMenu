@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Added
 - Changelog has been added to keep track of changes of the project.
+- Radius can be set via XML attribute or the setRadius method.
 
 ### Removed
 - CircleLayout no longer has a circleBackground attribute.

@@ -61,7 +61,7 @@ public class CircleLayout extends ViewGroup {
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
-    private float radius = 0;
+    private float radius = -1;
 
     // Child sizes
     private int maxChildWidth = 0;
@@ -115,8 +115,8 @@ public class CircleLayout extends ViewGroup {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
 
-
             speed = a.getInt(R.styleable.CircleLayout_speed, speed);
+            radius = a.getDimension(R.styleable.CircleLayout_radius, radius);
             isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
 
             // The angle where the first menu item will be drawn
@@ -153,6 +153,18 @@ public class CircleLayout extends ViewGroup {
             throw new InvalidParameterException("Speed must be a positive integer number");
         }
         this.speed = speed;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setRadius(float radius) {
+        if(radius < 0){
+            throw new InvalidParameterException("Radius cannot be negative");
+        }
+        this.radius = radius;
+        setChildAngles();
     }
 
     public boolean isRotating() {
@@ -287,8 +299,10 @@ public class CircleLayout extends ViewGroup {
         int layoutWidth = r - l;
         int layoutHeight = b - t;
 
-        radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
-                : layoutHeight / 3;
+        if(radius < 0) {
+            radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
+                    : layoutHeight / 3;
+        }
 
         circleHeight = getHeight();
         circleWidth = getWidth();
