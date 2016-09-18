@@ -15,8 +15,8 @@
 -->
 <resources>
     <declare-styleable name="CircleLayout">
-        <attr name="circleBackground" format="reference" />
         <attr name="isRotating" format="boolean" />
+        <attr name="radius" format="dimension" />
         <attr name="speed" format="integer" />
         <attr name="firstChildPosition">
             <enum name="East" value="0" />

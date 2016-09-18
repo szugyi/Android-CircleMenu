@@ -20,10 +20,6 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -63,12 +59,9 @@ public class CircleLayout extends ViewGroup {
     private OnCenterClickListener onCenterClickListener = null;
     private OnRotationFinishedListener onRotationFinishedListener = null;
 
-    // Background image
-    private Bitmap originalBackground, scaledBackground;
-
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
-    private float radius = 0;
+    private float radius = -1;
 
     // Child sizes
     private int maxChildWidth = 0;
@@ -122,8 +115,8 @@ public class CircleLayout extends ViewGroup {
         if (attrs != null) {
             TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
 
-
             speed = a.getInt(R.styleable.CircleLayout_speed, speed);
+            radius = a.getDimension(R.styleable.CircleLayout_radius, radius);
             isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
 
             // The angle where the first menu item will be drawn
@@ -132,16 +125,6 @@ public class CircleLayout extends ViewGroup {
                 if (pos.getAngle() == angle) {
                     firstChildPosition = pos;
                     break;
-                }
-            }
-
-            if (originalBackground == null) {
-                int picId = a.getResourceId(R.styleable.CircleLayout_circleBackground, -1);
-
-                // If a background image was set as an attribute,
-                // retrieve the image
-                if (picId != -1) {
-                    originalBackground = BitmapFactory.decodeResource(getResources(), picId);
                 }
             }
 
@@ -170,6 +153,18 @@ public class CircleLayout extends ViewGroup {
             throw new InvalidParameterException("Speed must be a positive integer number");
         }
         this.speed = speed;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setRadius(float radius) {
+        if(radius < 0){
+            throw new InvalidParameterException("Radius cannot be negative");
+        }
+        this.radius = radius;
+        setChildAngles();
     }
 
     public boolean isRotating() {
@@ -239,39 +234,6 @@ public class CircleLayout extends ViewGroup {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        // The sizes of the ViewGroup
-        circleHeight = getHeight();
-        circleWidth = getWidth();
-
-        if (originalBackground != null) {
-            // Scaling the size of the background image
-            if (scaledBackground == null) {
-                float diameter = radius * 2;
-                float sx = diameter / originalBackground
-                        .getWidth();
-                float sy = diameter / originalBackground
-                        .getHeight();
-
-                Matrix matrix = new Matrix();
-                matrix.postScale(sx, sy);
-
-                scaledBackground = Bitmap.createBitmap(originalBackground, 0, 0,
-                        originalBackground.getWidth(), originalBackground.getHeight(),
-                        matrix, false);
-            }
-
-            if (scaledBackground != null) {
-                // Move the background to the center
-                int cx = (circleWidth - scaledBackground.getWidth()) / 2;
-                int cy = (circleHeight - scaledBackground.getHeight()) / 2;
-
-                canvas.drawBitmap(scaledBackground, cx, cy, null);
-            }
-        }
-    }
-
-    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // Measure child views first
         maxChildWidth = 0;
@@ -337,8 +299,10 @@ public class CircleLayout extends ViewGroup {
         int layoutWidth = r - l;
         int layoutHeight = b - t;
 
-        radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
-                : layoutHeight / 3;
+        if(radius < 0) {
+            radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
+                    : layoutHeight / 3;
+        }
 
         circleHeight = getHeight();
         circleWidth = getWidth();

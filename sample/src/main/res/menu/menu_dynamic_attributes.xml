@@ -6,6 +6,10 @@
         android:title="@string/speed"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menu_radius"
+        android:title="@string/radius"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_isRotating"
         android:title="@string/is_rotating"
         app:showAsAction="never" />

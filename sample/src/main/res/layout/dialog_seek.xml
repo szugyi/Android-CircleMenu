@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <SeekBar
-        android:id="@+id/speed_seekBar"
+        android:id="@+id/seekBar"
         android:max="99"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -14,5 +14,7 @@
         android:id="@+id/value_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 </LinearLayout>

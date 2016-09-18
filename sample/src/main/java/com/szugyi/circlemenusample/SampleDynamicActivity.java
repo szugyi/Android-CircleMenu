@@ -23,9 +23,20 @@ import java.util.Arrays;
  * Created by szugyi on 07/02/16.
  */
 public class SampleDynamicActivity extends SampleActivity {
+    private float density = 1.0f;
+
+    private float dpFromPx(final float px) {
+        return px / density;
+    }
+
+    private float pxFromDp(final float dp) {
+        return dp * density;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        density = getResources().getDisplayMetrics().density;
     }
 
     @Override
@@ -41,6 +52,9 @@ public class SampleDynamicActivity extends SampleActivity {
             case R.id.menu_speed:
                 showSpeedDialog();
                 return true;
+            case R.id.menu_radius:
+                showRadiusDialog();
+                return true;
             case R.id.menu_isRotating:
                 showIsRotatingDialog();
                 return true;
@@ -54,14 +68,14 @@ public class SampleDynamicActivity extends SampleActivity {
 
     private void showSpeedDialog() {
         LayoutInflater li = LayoutInflater.from(SampleDynamicActivity.this);
-        View dialogView = li.inflate(R.layout.dialog_speed, null);
+        View dialogView = li.inflate(R.layout.dialog_seek, null);
 
         int speed = circleLayout.getSpeed() - 1;
 
         final TextView valueText = (TextView) dialogView.findViewById(R.id.value_textView);
         valueText.setText(getString(R.string.dialog_speed_value, speed));
 
-        final SeekBar speedSeek = (SeekBar) dialogView.findViewById(R.id.speed_seekBar);
+        final SeekBar speedSeek = (SeekBar) dialogView.findViewById(R.id.seekBar);
         speedSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -84,6 +98,44 @@ public class SampleDynamicActivity extends SampleActivity {
 
         new AlertDialog.Builder(this)
                 .setTitle(R.string.dialog_speed)
+                .setView(dialogView)
+                .setPositiveButton(android.R.string.ok, null)
+                .create().show();
+    }
+
+    private void showRadiusDialog() {
+        LayoutInflater li = LayoutInflater.from(SampleDynamicActivity.this);
+        View dialogView = li.inflate(R.layout.dialog_seek, null);
+
+        float radius = dpFromPx(circleLayout.getRadius());
+
+        final TextView valueText = (TextView) dialogView.findViewById(R.id.value_textView);
+        valueText.setText(getString(R.string.dialog_radius_value, (int) radius));
+
+        final SeekBar radiusSeek = (SeekBar) dialogView.findViewById(R.id.seekBar);
+        radiusSeek.setMax(200);
+        radiusSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                int radius = (int) pxFromDp(progress);
+                valueText.setText(getString(R.string.dialog_radius_value, radius));
+                circleLayout.setRadius(radius);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        radiusSeek.setProgress((int) radius);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.dialog_radius)
                 .setView(dialogView)
                 .setPositiveButton(android.R.string.ok, null)
                 .create().show();

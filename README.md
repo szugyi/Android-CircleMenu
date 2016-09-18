@@ -13,12 +13,12 @@ Grab via Maven
 <dependency>
     <groupId>com.github.szugyi</groupId>
     <artifactId>Android-CircleMenu</artifactId>
-    <version>1.1.2</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 or Gradle:
 ```groovy
-compile 'com.github.szugyi:Android-CircleMenu:1.1.2'
+compile 'com.github.szugyi:Android-CircleMenu:2.0.0'
 ```
 
 Snapshots of the development version are available in [Sonatype's `snapshots` repository](https://oss.sonatype.org/content/repositories/snapshots/).
@@ -30,7 +30,7 @@ Attributes
 * `firstChildPosition` ([`East`, `South`, `West`, `North`]) - The angle where the first child of the CircleLayout will be put. Possible values are: `East` - to the right, `South` - to the bottom, `West` - to the left, `North` - to the top. Default: `South`
 * `isRotating` (boolean) - Determines wether the child views are rotatable or not. Default: true
 * `speed` (integer) - You can set the speed of the rotation. NOTE: The higher the value, the faster the rotation. It must be greater than 0. Values between 10 - 100 should work well. Default: 25
-* `circleBackground` (reference) - The background image's resource to be used for the CircleLayout. Deprecated
+* `radius` (dimension) - The radius of the circle can be defined using dps or pixels.
 
 EventListeners
 --------------
@@ -38,6 +38,10 @@ EventListeners
 * `OnItemSelectedListener` - If the `isRotating` attribute is set to true, then it is called when the view is rotated to the `firstChildPosition`. Otherwise it is called with the `OnItemClickListener` when the child is tapped.
 * `OnCenterClickListener` - Called when the center of the CircleLayout is tapped.
 * `OnRotationFinishedListener` -  If the `isRotating` attribute is set to true, then it is called when the rotation is finished, and passes the view which is on the `firstChildPosition`. Otherwise it is never called.
+
+Changelog
+---------
+Description about the changes made to each version of the project can be found in the [CHANGELOG.md](./CHANGELOG.md) file.
 
 Credits
 -------

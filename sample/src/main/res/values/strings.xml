@@ -39,11 +39,14 @@
     <string name="button_remove">Remove child</string>
     <!-- Menu items -->
     <string name="speed">speed</string>
+    <string name="radius">radius</string>
     <string name="is_rotating">isRotating</string>
     <string name="first_child_position">firstChildPosition</string>
     <!-- Dialog -->
     <string name="dialog_speed">Set speed attribute</string>
-    <string name="dialog_speed_value">value: %d</string>
+    <string name="dialog_speed_value">speed: %d</string>
+    <string name="dialog_radius">Set radius attribute</string>
+    <string name="dialog_radius_value">radius: %ddp</string>
     <string name="dialog_is_rotating">Set isRotating attribute</string>
     <string name="dialog_first_child_position">Set the firstChildPosition attribute</string>
     <!-- Toasts -->
