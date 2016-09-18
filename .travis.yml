@@ -1,32 +1,22 @@
-#
-# Copyright 2013 Csaba Szugyiczki
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
 language: android
 jdk: oraclejdk7
+env:
+  global:
+  - secure: dgEwwFwD+GQUJ0i0Ojv3/ZtMR5MHUaYVi+QEmetTXR0X4ecAJKd0fsut72VSSDy8dDcWbXcnyG6YdIxQbCd9LJYCqOp+1WqgWgPOr+Zy4oqDpUbbsyeUOjyavxVe9zQg6FmJ/pMOwwIn5EMssAlP+Yg/H0L+3CXMbyNP161Tv80=
+  - secure: F8HLqrCOCI9nxIiEixgrTkXbQo5usv3dYc2BtBtP8qWN3ROx7dj68r0ilduEQa534x7pHYOGW6+R2FrFhk0+KIea2kvmad0OnOOoPIitt/1GTjDohKRjGe0k3WI7fsi7O7aZz8c4xSuWPI0pBXNTfmBVRZTwL11+unQtznXh57o=
 android:
-    components:
-        - platform-tools
-        - tools
-        - build-tools-23.0.2
-        - android-23
-    licenses:
-        - 'android-sdk-preview-license-.+'
-        - 'android-sdk-license-.+'
+  components:
+  - platform-tools
+  - tools
+  - build-tools-23.0.2
+  - android-23
+  licenses:
+  - android-sdk-preview-license-.+
+  - android-sdk-license-.+
 before_script:
-    - chmod +x ./before.sh
-    - ./before.sh
+  - chmod +x ./before.sh
+  - ./before.sh
 script:
-    - ./gradlew build
+  - ./gradlew build
+after_success:
+  - ./archive.sh
