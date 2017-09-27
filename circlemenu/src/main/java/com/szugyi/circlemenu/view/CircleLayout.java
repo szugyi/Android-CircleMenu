@@ -350,7 +350,7 @@ public class CircleLayout extends ViewGroup {
         setChildAngles();
     }
 
-    protected void setChildAngles() {
+    private void setChildAngles() {
         int left, top, childWidth, childHeight, childCount = getChildCount();
         float angleDelay = 360.0f / childCount;
         float halfAngle = angleDelay / 2;
