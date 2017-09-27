@@ -21,6 +21,8 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -54,14 +56,13 @@ public class CircleLayout extends ViewGroup {
     }
 
     // Event listeners
-    private OnItemClickListener onItemClickListener = null;
-    private OnItemSelectedListener onItemSelectedListener = null;
-    private OnCenterClickListener onCenterClickListener = null;
-    private OnRotationFinishedListener onRotationFinishedListener = null;
+    protected WheelCallBack wheelCallBack = null;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
     private float radius = -1;
+    private final float DefaultRadiusRatio = 3;
+    private float radiusRatio = DefaultRadiusRatio;
 
     // Child sizes
     private int maxChildWidth = 0;
@@ -121,6 +122,13 @@ public class CircleLayout extends ViewGroup {
 
             // The angle where the first menu item will be drawn
             angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
+
+            // Get radius ratio
+            TypedValue typedValue = new TypedValue();
+            radiusRatio = a.getValue(R.styleable.CircleLayout_wheel_radius_ratio, typedValue)
+                    ? typedValue.getFloat()
+                    : DefaultRadiusRatio;
+
             for (FirstChildPosition pos : FirstChildPosition.values()) {
                 if (pos.getAngle() == angle) {
                     firstChildPosition = pos;
@@ -129,7 +137,7 @@ public class CircleLayout extends ViewGroup {
             }
 
             a.recycle();
-
+            Log.d("WheelMenu","radiusRatio:" + radiusRatio);
             // Needed for the ViewGroup to be drawn
             setWillNotDraw(false);
         }
@@ -139,9 +147,14 @@ public class CircleLayout extends ViewGroup {
         return angle;
     }
 
-    public void setAngle(float angle) {
-        this.angle = angle % 360;
+    public void setAngle(float mAngle) {
+        angle = mAngle % 360;
         setChildAngles();
+    }
+
+
+    private boolean checkSign(float x,float y){
+        return ((x<0) == (y<0));
     }
 
     public int getSpeed() {
@@ -298,15 +311,16 @@ public class CircleLayout extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int layoutWidth = r - l;
         int layoutHeight = b - t;
-
-        if(radius < 0) {
-            radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
-                    : layoutHeight / 3;
-        }
-
+        // Override radius here
+        setRadius(layoutWidth, layoutHeight);
         circleHeight = getHeight();
         circleWidth = getWidth();
         setChildAngles();
+    }
+
+    private void setRadius(int layoutWidth, int layoutHeight) {
+        if(radius < 0)
+            radius = Math.min(layoutWidth, layoutHeight) / radiusRatio;
     }
 
     /**
@@ -331,12 +345,12 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
-    private void rotateButtons(float degrees) {
+    protected void rotateButtons(float degrees) {
         angle += degrees;
         setChildAngles();
     }
 
-    private void setChildAngles() {
+    protected void setChildAngles() {
         int left, top, childWidth, childHeight, childCount = getChildCount();
         float angleDelay = 360.0f / childCount;
         float halfAngle = angleDelay / 2;
@@ -369,21 +383,28 @@ public class CircleLayout extends ViewGroup {
             boolean isFirstItem = distance <= halfAngle || distance >= (360 - halfAngle);
             if (isFirstItem && selectedView != child) {
                 selectedView = child;
-                if (onItemSelectedListener != null && isRotating) {
-                    onItemSelectedListener.onItemSelected(child);
+                if (wheelCallBack != null && isRotating) {
+                    wheelCallBack.onItemSelected(child);
                 }
+                //
+                onItemSelected(child);
             }
 
             child.layout(left, top, left + childWidth, top + childHeight);
+            onFixRotation(child,localAngle);
             localAngle += angleDelay;
         }
     }
 
-    private void animateTo(float endDegree, long duration) {
+    protected void onItemSelected(View child){}
+
+    protected void onFixRotation(View child, float localAngle) {
+    }
+
+    protected void animateTo(final float endDegree, long duration) {
         if (animator != null && animator.isRunning() || Math.abs(angle - endDegree) < 1) {
             return;
         }
-
         animator = ObjectAnimator.ofFloat(CircleLayout.this, "angle", angle, endDegree);
         animator.setDuration(duration);
         animator.setInterpolator(new DecelerateInterpolator());
@@ -400,13 +421,11 @@ public class CircleLayout extends ViewGroup {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (wasCanceled) {
+                if (wasCanceled)
                     return;
-                }
-
-                if (onRotationFinishedListener != null) {
-                    View view = getSelectedItem();
-                    onRotationFinishedListener.onRotationFinished(view);
+                View view = getSelectedItem();
+                if (wheelCallBack != null) {
+                    wheelCallBack.onRotationFinished(view);
                 }
             }
 
@@ -418,7 +437,7 @@ public class CircleLayout extends ViewGroup {
         animator.start();
     }
 
-    private void stopAnimation() {
+    protected void stopAnimation() {
         if (animator != null && animator.isRunning()) {
             animator.cancel();
             animator = null;
@@ -574,30 +593,27 @@ public class CircleLayout extends ViewGroup {
                 float centerX = circleWidth / 2F;
                 float centerY = circleHeight / 2F;
 
-                if (onCenterClickListener != null
+                if (wheelCallBack != null
                         && e.getX() < centerX + radius - (maxChildWidth / 2)
                         && e.getX() > centerX - radius + (maxChildWidth / 2)
                         && e.getY() < centerY + radius - (maxChildHeight / 2)
                         && e.getY() > centerY - radius + (maxChildHeight / 2)) {
-                    onCenterClickListener.onCenterClick();
+                    wheelCallBack.onCenterClick();
                     return true;
                 }
             }
 
             if (tappedView != null) {
                 if (selectedView == tappedView) {
-                    if (onItemClickListener != null) {
-                        onItemClickListener.onItemClick(tappedView);
+                    if (wheelCallBack != null) {
+                        wheelCallBack.onItemClick(tappedView);
                     }
                 } else {
                     rotateViewToCenter(tappedView);
                     if (!isRotating) {
-                        if (onItemSelectedListener != null) {
-                            onItemSelectedListener.onItemSelected(tappedView);
-                        }
-
-                        if (onItemClickListener != null) {
-                            onItemClickListener.onItemClick(tappedView);
+                        if (wheelCallBack != null) {
+                            wheelCallBack.onItemSelected(tappedView);
+                            wheelCallBack.onItemClick(tappedView);
                         }
                     }
                 }
@@ -618,38 +634,17 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
-    public interface OnItemClickListener {
+    public interface WheelCallBack {
         void onItemClick(View view);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
-        this.onItemClickListener = onItemClickListener;
-    }
-
-    public interface OnItemSelectedListener {
         void onItemSelected(View view);
-    }
-
-    public void setOnItemSelectedListener(
-            OnItemSelectedListener onItemSelectedListener) {
-        this.onItemSelectedListener = onItemSelectedListener;
-    }
-
-    public interface OnCenterClickListener {
         void onCenterClick();
-    }
-
-    public void setOnCenterClickListener(
-            OnCenterClickListener onCenterClickListener) {
-        this.onCenterClickListener = onCenterClickListener;
-    }
-
-    public interface OnRotationFinishedListener {
         void onRotationFinished(View view);
+        void onSettleRotation(float endDegree, long duration);
+        void onRotate(float degree);
+        void onStopAnimation();
     }
 
-    public void setOnRotationFinishedListener(
-            OnRotationFinishedListener onRotationFinishedListener) {
-        this.onRotationFinishedListener = onRotationFinishedListener;
+    public void setWheelCallBack(WheelCallBack wheelCallBack) {
+        this.wheelCallBack = wheelCallBack;
     }
 }
