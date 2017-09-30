@@ -99,48 +99,41 @@ public class CircleLayout extends ViewGroup {
 
     public CircleLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(attrs);
+        gestureDetector = new GestureDetector(getContext(), new MyGestureListener());
+        quadrantTouched = new boolean[]{false, false, false, false, false};
+
+        if (attrs != null) {
+            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
+            init(a);
+            a.recycle();
+        }
+        // Needed for the ViewGroup to be drawn
+        setWillNotDraw(false);
     }
 
     /**
      * Initializes the ViewGroup and modifies it's default behavior by the
      * passed attributes
      *
-     * @param attrs the attributes used to modify default settings
      */
-    protected void init(AttributeSet attrs) {
-        gestureDetector = new GestureDetector(getContext(),
-                new MyGestureListener());
-        quadrantTouched = new boolean[]{false, false, false, false, false};
-
-        if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
-
-            speed = a.getInt(R.styleable.CircleLayout_speed, speed);
-            radius = a.getDimension(R.styleable.CircleLayout_radius, radius);
-            isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
-
-            // The angle where the first menu item will be drawn
-            angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
-
-            // Get radius ratio
-            TypedValue typedValue = new TypedValue();
-            radiusRatio = a.getValue(R.styleable.CircleLayout_wheel_radius_ratio, typedValue)
-                    ? typedValue.getFloat()
-                    : DefaultRadiusRatio;
-
-            for (FirstChildPosition pos : FirstChildPosition.values()) {
-                if (pos.getAngle() == angle) {
-                    firstChildPosition = pos;
-                    break;
-                }
+    protected void init(TypedArray a) {
+        speed = a.getInt(R.styleable.CircleLayout_speed, speed);
+        radius = a.getDimension(R.styleable.CircleLayout_radius, radius);
+        isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
+        // The angle where the first menu item will be drawn
+        angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
+        // Get radius ratio
+        TypedValue typedValue = new TypedValue();
+        radiusRatio = a.getValue(R.styleable.CircleLayout_wheel_radius_ratio, typedValue)
+                ? typedValue.getFloat()
+                : DefaultRadiusRatio;
+        for (FirstChildPosition pos : FirstChildPosition.values()) {
+            if (pos.getAngle() == angle) {
+                firstChildPosition = pos;
+                break;
             }
-
-            a.recycle();
-            Log.d("WheelMenu","radiusRatio:" + radiusRatio);
-            // Needed for the ViewGroup to be drawn
-            setWillNotDraw(false);
         }
+        Log.d("WheelMenu","radiusRatio:" + radiusRatio);
     }
 
     public float getAngle() {
@@ -642,6 +635,7 @@ public class CircleLayout extends ViewGroup {
         void onSettleRotation(float endDegree, long duration);
         void onRotate(float degree);
         void onStopAnimation();
+        void loadMore(boolean isNext);
     }
 
     public void setWheelCallBack(WheelCallBack wheelCallBack) {

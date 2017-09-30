@@ -39,6 +39,9 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
             case 5:
                 intent.putExtra(SampleActivity.ARG_LAYOUT, R.layout.sample_dynamic_children);
                 break;
+            case 6:
+                intent = new Intent(this, WheelActivity.class);
+                break;
         }
 
         startActivity(intent);

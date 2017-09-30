@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="wheel_item_id" type="id"/>
+    <dimen name="spin_margin">-160dp</dimen>
 </resources>

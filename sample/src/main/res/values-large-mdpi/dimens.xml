@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="spin_item_width">150dp</dimen>
+    <dimen name="spin_margin">-380dp</dimen>
+    <item name="spin_radius_ratio" type="dimen" format="float">4.5</item>
+    <dimen name="spin_pointer_width">120dp</dimen>
+
+    <dimen name="spin_pointer_pivot_x_left">60dp</dimen>
+    <dimen name="spin_pointer_pivot_y_left">40dp</dimen>
+
+    <dimen name="spin_pointer_pivot_x_right">20dp</dimen>
+    <dimen name="spin_pointer_pivot_y_right">40dp</dimen>
+
+    <!-- 1. Fonts sizes-->
+    <dimen name="txt_h1">35sp</dimen>
+    <dimen name="txt_h2">30sp</dimen>
+    <dimen name="txt_h3">24sp</dimen>
+    <dimen name="txt_h4">20sp</dimen>
+    <dimen name="txt_h5">18sp</dimen>
+    <dimen name="txt_h6">14sp</dimen>
+    <dimen name="txt_h7">12.5sp</dimen>
+    <dimen name="txt_h8">12sp</dimen>
+</resources>

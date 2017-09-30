@@ -18,6 +18,7 @@ package com.szugyi.circlemenu.view;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -30,26 +31,35 @@ import com.szugyi.circlemenu.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WheelBase extends CircleLayout {
+public class WheelLayout extends CircleLayout {
     // Background image
     private ImageView bgImageView;
-    protected List<WheelBase.WheelItem> mItems;
+    protected List<WheelLayout.WheelItem> mItems;
     private ObjectAnimator animator;
     private int mItemCount;
     private int mCurrentItem;
     private int mSelectedChild;
     private final String TAG = "WheelMenu";
 
-    public WheelBase(Context context) {
+    public WheelLayout(Context context) {
         super(context);
     }
 
-    public WheelBase(Context context, AttributeSet attrs) {
+    public WheelLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public WheelBase(Context context, AttributeSet attrs, int defStyle) {
+    public WheelLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void init(TypedArray a) {
+        super.init(a);
+        final int bgRes = a.getResourceId(R.styleable.CircleLayout_wheel_bg,0);
+        if (bgRes != 0) {
+            // Handel background here,
+        }
     }
 
     public void setBgImageView(ImageView bgImageView) {
@@ -140,7 +150,7 @@ public class WheelBase extends CircleLayout {
         animator.start();
     }
 
-    public void setItems(List<? extends WheelBase.WheelItem> items, boolean display) {
+    public void setItems(List<? extends WheelLayout.WheelItem> items, boolean display) {
         clear();
         addItems(items);
         if (!display)
@@ -173,7 +183,7 @@ public class WheelBase extends CircleLayout {
 
     private void clearView(View child) {
         ((TextView) child).setText("");
-        child.setTag(R.id.wheel_item,null);
+        child.setTag(R.id.wheel_item_id,null);
     }
 
     private void initWheelData() {
@@ -263,11 +273,11 @@ public class WheelBase extends CircleLayout {
     private void setChildrenValue(View children, WheelItem item) {
         if (children instanceof TextView) {
             ((TextView) children).setText(item.getName());
-            children.setTag(R.id.wheel_item,item);
+            children.setTag(R.id.wheel_item_id,item);
         }
     }
 
-    public void addItems(List<? extends WheelBase.WheelItem> cats) {
+    public void addItems(List<? extends WheelLayout.WheelItem> cats) {
         if (cats == null || cats.isEmpty())
             return;
         if (mItems == null)
@@ -280,6 +290,10 @@ public class WheelBase extends CircleLayout {
         mItemCount = mItems.size();
     }
 
+    public int getItemCount(){
+        return mItems !=null ? mItems.size() : -1;
+    }
+
     private WheelItem getItem(int index) {
         if (mItems ==null || mItems.isEmpty() ||  index < 0)
             return null;
@@ -287,18 +301,19 @@ public class WheelBase extends CircleLayout {
         return mItems.get(index);
     }
 
-    protected void loadMore(boolean isNext){
-
+    private void loadMore(boolean isNext){
+        if (wheelCallBack !=null)
+            wheelCallBack.loadMore(isNext);
     }
 
-    public WheelItem getSelectedCategory(){
+    public WheelItem getSelectedWheelItem(){
         return getItemByView(getSelectedItem());
     }
 
     private WheelItem getItemByView(View child) {
         return child !=null
-                && child.getTag(R.id.wheel_item) instanceof WheelItem
-                ? (WheelItem) child.getTag(R.id.wheel_item)
+                && child.getTag(R.id.wheel_item_id) instanceof WheelItem
+                ? (WheelItem) child.getTag(R.id.wheel_item_id)
                 : null;
     }
 
