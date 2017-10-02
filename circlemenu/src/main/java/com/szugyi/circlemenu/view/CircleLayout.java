@@ -308,15 +308,11 @@ public class CircleLayout extends ViewGroup {
         int layoutWidth = r - l;
         int layoutHeight = b - t;
         // Override radius here
-        setRadius(layoutWidth, layoutHeight);
+        if(radius < 0)
+            radius = Math.min(layoutWidth, layoutHeight) / radiusRatio;
         circleHeight = getHeight();
         circleWidth = getWidth();
         setChildAngles();
-    }
-
-    private void setRadius(int layoutWidth, int layoutHeight) {
-        if(radius < 0)
-            radius = Math.min(layoutWidth, layoutHeight) / radiusRatio;
     }
 
     /**
