@@ -40,6 +40,11 @@ public class WheelLayout extends CircleLayout {
     private int mCurrentItem;
     private int mSelectedChild;
     private final String TAG = "WheelMenu";
+    protected WheelCallBack wheelCallBack = null;
+
+    public void setWheelCallBack(WheelCallBack wheelCallBack) {
+        this.wheelCallBack = wheelCallBack;
+    }
 
     public WheelLayout(Context context) {
         super(context);
@@ -132,6 +137,12 @@ public class WheelLayout extends CircleLayout {
         }
         if (wheelCallBack !=null)
             wheelCallBack.onStopAnimation();
+    }
+
+    @Override
+    protected void onRotationFinished(View child) {
+        if (wheelCallBack !=null)
+            wheelCallBack.onRotationFinished(child);
     }
 
     /**
@@ -346,4 +357,11 @@ public class WheelLayout extends CircleLayout {
         String getName();
         long getId();
     }
+    public interface WheelCallBack extends OnRotationFinishedListener{
+        void onSettleRotation(float endDegree, long duration);
+        void onRotate(float degree);
+        void onStopAnimation();
+        void loadMore(boolean isNext);
+    }
+
 }

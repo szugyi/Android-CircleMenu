@@ -8,9 +8,7 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.szugyi.circlemenu.view.CircleLayout;
 import com.szugyi.circlemenu.view.WheelLayout;
 
 import java.util.ArrayList;
@@ -59,7 +57,7 @@ public class WheelActivity extends AppCompatActivity{
         scWheel.setBgImageView((ImageView) findViewById(R.id.sc_bg));
         final ImageView sprLeft = (ImageView) findViewById(R.id.spr_left);
         final ImageView sprRight = (ImageView) findViewById(R.id.spr_right);
-        scWheel.setWheelCallBack(new CircleLayout.WheelCallBack() {
+        scWheel.setWheelCallBack(new WheelLayout.WheelCallBack() {
             private ObjectAnimator animator;
             @Override
             public void onStopAnimation() {
@@ -75,22 +73,6 @@ public class WheelActivity extends AppCompatActivity{
                 loadSCByMC(mcWheel.getSelectedWheelItem(),isNext);
                 Log.d("WheelMenu","Load more Page: " + mcWheel.getItemCount()/ITEM_LIMIT);
             }
-
-            @Override
-            public void onItemClick(View view) {
-
-            }
-
-            @Override
-            public void onItemSelected(View view) {
-
-            }
-
-            @Override
-            public void onCenterClick() {
-                Toast.makeText(getApplicationContext(), R.string.center_click, Toast.LENGTH_SHORT).show();
-            }
-
 
             @Override
             public void onRotate(float angle) {
@@ -117,7 +99,7 @@ public class WheelActivity extends AppCompatActivity{
             }
         });
 
-        mcWheel.setWheelCallBack(new CircleLayout.WheelCallBack() {
+        mcWheel.setWheelCallBack(new WheelLayout.WheelCallBack() {
             private ObjectAnimator animator;
 
             @Override
@@ -131,21 +113,6 @@ public class WheelActivity extends AppCompatActivity{
             @Override
             public void loadMore(boolean isNext) {
 
-            }
-
-            @Override
-            public void onItemClick(View view) {
-
-            }
-
-            @Override
-            public void onItemSelected(View view) {
-
-            }
-
-            @Override
-            public void onCenterClick() {
-                Toast.makeText(getApplicationContext(), R.string.center_click, Toast.LENGTH_SHORT).show();
             }
 
             @Override

@@ -26,8 +26,13 @@ import android.widget.Toast;
 
 import com.szugyi.circlemenu.view.CircleImageView;
 import com.szugyi.circlemenu.view.CircleLayout;
+import com.szugyi.circlemenu.view.CircleLayout.OnCenterClickListener;
+import com.szugyi.circlemenu.view.CircleLayout.OnItemClickListener;
+import com.szugyi.circlemenu.view.CircleLayout.OnItemSelectedListener;
+import com.szugyi.circlemenu.view.CircleLayout.OnRotationFinishedListener;
 
-public class SampleActivity extends AppCompatActivity implements CircleLayout.WheelCallBack{
+public class SampleActivity extends AppCompatActivity implements OnItemSelectedListener,
+        OnItemClickListener, OnRotationFinishedListener, OnCenterClickListener {
     public static final String ARG_LAYOUT = "layout";
 
     protected CircleLayout circleLayout;
@@ -44,13 +49,10 @@ public class SampleActivity extends AppCompatActivity implements CircleLayout.Wh
 
         // Set listeners
         circleLayout = (CircleLayout) findViewById(R.id.circle_layout);
-
-        circleLayout.setWheelCallBack(this);
-
-//        circleLayout.setOnItemSelectedListener(this);
-//        circleLayout.setOnItemClickListener(this);
-//        circleLayout.setOnRotationFinishedListener(this);
-//        circleLayout.setOnCenterClickListener(this);
+        circleLayout.setOnItemSelectedListener(this);
+        circleLayout.setOnItemClickListener(this);
+        circleLayout.setOnRotationFinishedListener(this);
+        circleLayout.setOnCenterClickListener(this);
 
         selectedTextView = (TextView) findViewById(R.id.selected_textView);
 
@@ -132,26 +134,6 @@ public class SampleActivity extends AppCompatActivity implements CircleLayout.Wh
         Animation animation = new RotateAnimation(0, 360, view.getWidth() / 2, view.getHeight() / 2);
         animation.setDuration(250);
         view.startAnimation(animation);
-    }
-
-    @Override
-    public void onSettleRotation(float endDegree, long duration) {
-
-    }
-
-    @Override
-    public void onRotate(float degree) {
-
-    }
-
-    @Override
-    public void onStopAnimation() {
-
-    }
-
-    @Override
-    public void loadMore(boolean isNext) {
-
     }
 
     @Override
