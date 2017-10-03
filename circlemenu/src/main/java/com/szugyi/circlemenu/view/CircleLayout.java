@@ -392,8 +392,6 @@ public class CircleLayout extends ViewGroup {
 
     protected void onItemSelected(View child){}
 
-    protected void onRotationFinished(View child){}
-
     protected void onFixRotation(View child, float localAngle) {}
 
     protected void animateTo(final float endDegree, long duration) {
@@ -418,11 +416,10 @@ public class CircleLayout extends ViewGroup {
             public void onAnimationEnd(Animator animation) {
                 if (wasCanceled)
                     return;
-                View view = getSelectedItem();
                 if (onRotationFinishedListener != null) {
+                    View view = getSelectedItem();
                     onRotationFinishedListener.onRotationFinished(view);
                 }
-                onRotationFinished(view);
             }
 
             @Override

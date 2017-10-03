@@ -57,7 +57,12 @@ public class WheelActivity extends AppCompatActivity{
         scWheel.setBgImageView((ImageView) findViewById(R.id.sc_bg));
         final ImageView sprLeft = (ImageView) findViewById(R.id.spr_left);
         final ImageView sprRight = (ImageView) findViewById(R.id.spr_right);
-        scWheel.setWheelCallBack(new WheelLayout.WheelCallBack() {
+        scWheel.setOnRotateListener(new WheelLayout.OnRotateListener() {
+            @Override
+            public void onRotationFinished(View view) {
+                sprRight.setRotation(30);
+            }
+
             private ObjectAnimator animator;
             @Override
             public void onStopAnimation() {
@@ -68,23 +73,11 @@ public class WheelActivity extends AppCompatActivity{
             }
 
             @Override
-            public void loadMore(boolean isNext) {
-                // Load more from server : sort [DEC | ASC]
-                loadSCByMC(mcWheel.getSelectedWheelItem(),isNext);
-                Log.d("WheelMenu","Load more Page: " + mcWheel.getItemCount()/ITEM_LIMIT);
-            }
-
-            @Override
             public void onRotate(float angle) {
                 final float rotation = sprRight.getRotation() - angle;
                 if (rotation > 83 || rotation <-23)
                     return;
                 sprRight.setRotation(rotation);
-            }
-
-            @Override
-            public void onRotationFinished(View view) {
-                sprRight.setRotation(30);
             }
 
             @Override
@@ -99,7 +92,22 @@ public class WheelActivity extends AppCompatActivity{
             }
         });
 
-        mcWheel.setWheelCallBack(new WheelLayout.WheelCallBack() {
+        // Load more from server : sort [DEC | ASC]
+        scWheel.setOnLoadMoreListener(new WheelLayout.OnLoadMoreListener() {
+            @Override
+            public void loadMore(boolean isNext) {
+                loadSCByMC(mcWheel.getSelectedWheelItem(),isNext);
+                Log.d("WheelMenu","Load more Page: " + mcWheel.getItemCount()/ITEM_LIMIT);
+            }
+        });
+
+        mcWheel.setOnRotateListener(new WheelLayout.OnRotateListener() {
+            @Override
+            public void onRotationFinished(View view) {
+                sprLeft.setRotation(-30);
+                loadSCByMC(mcWheel.getSelectedWheelItem());
+            }
+
             private ObjectAnimator animator;
 
             @Override
@@ -111,22 +119,11 @@ public class WheelActivity extends AppCompatActivity{
             }
 
             @Override
-            public void loadMore(boolean isNext) {
-
-            }
-
-            @Override
             public void onRotate(float angle) {
                 final float rotation = sprLeft.getRotation() - angle;
                 if (rotation > 23 || rotation < -83)
                     return;
                 sprLeft.setRotation(rotation);
-            }
-
-            @Override
-            public void onRotationFinished(View view) {
-                sprLeft.setRotation(-30);
-                loadSCByMC(mcWheel.getSelectedWheelItem());
             }
 
             @Override

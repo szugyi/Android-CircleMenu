@@ -31,19 +31,24 @@ import com.szugyi.circlemenu.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WheelLayout extends CircleLayout {
+public class WheelLayout extends CircleLayout implements CircleLayout.OnRotationFinishedListener {
     // Background image
     private ImageView bgImageView;
-    protected List<WheelLayout.WheelItem> mItems;
+    protected List<WheelItem> mItems;
     private ObjectAnimator animator;
     private int mItemCount;
     private int mCurrentItem;
     private int mSelectedChild;
     private final String TAG = "WheelMenu";
-    protected WheelCallBack wheelCallBack = null;
+    protected OnRotateListener onRotateListener = null;
+    protected OnLoadMoreListener onLoadMoreListener = null;
 
-    public void setWheelCallBack(WheelCallBack wheelCallBack) {
-        this.wheelCallBack = wheelCallBack;
+    public void setOnRotateListener(OnRotateListener onRotateListener) {
+        this.onRotateListener = onRotateListener;
+    }
+
+    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
+        this.onLoadMoreListener = onLoadMoreListener;
     }
 
     public WheelLayout(Context context) {
@@ -61,10 +66,7 @@ public class WheelLayout extends CircleLayout {
     @Override
     protected void init(TypedArray a) {
         super.init(a);
-        final int bgRes = a.getResourceId(R.styleable.CircleLayout_wheel_bg,0);
-        if (bgRes != 0) {
-            // Handel background here,
-        }
+        setOnRotationFinishedListener(this);
     }
 
     public void setBgImageView(ImageView bgImageView) {
@@ -81,8 +83,8 @@ public class WheelLayout extends CircleLayout {
         super.rotateButtons(degrees);
         if (bgImageView !=null)
             bgImageView.setRotation(bgImageView.getRotation()+degrees);
-        if (wheelCallBack !=null)
-            wheelCallBack.onRotate(degrees);
+        if (onRotateListener !=null)
+            onRotateListener.onRotate(degrees);
     }
 
     protected void onFixRotation(View child, float localAngle) {
@@ -93,8 +95,8 @@ public class WheelLayout extends CircleLayout {
     protected void animateTo(float endDegree, long duration) {
         if (bgImageView !=null)
             rotateBackground(getAngle(),endDegree, duration);
-        if (wheelCallBack !=null)
-            wheelCallBack.onSettleRotation(endDegree, duration);
+        if (onRotateListener !=null)
+            onRotateListener.onSettleRotation(endDegree, duration);
         super.animateTo(endDegree, duration);
     }
 
@@ -135,14 +137,8 @@ public class WheelLayout extends CircleLayout {
             animator.cancel();
             animator = null;
         }
-        if (wheelCallBack !=null)
-            wheelCallBack.onStopAnimation();
-    }
-
-    @Override
-    protected void onRotationFinished(View child) {
-        if (wheelCallBack !=null)
-            wheelCallBack.onRotationFinished(child);
+        if (onRotateListener !=null)
+            onRotateListener.onStopAnimation();
     }
 
     /**
@@ -161,7 +157,7 @@ public class WheelLayout extends CircleLayout {
         animator.start();
     }
 
-    public void setItems(List<? extends WheelLayout.WheelItem> items, boolean display) {
+    public void setItems(List<? extends WheelItem> items, boolean display) {
         clear();
         addItems(items);
         if (!display)
@@ -288,7 +284,7 @@ public class WheelLayout extends CircleLayout {
         }
     }
 
-    public void addItems(List<? extends WheelLayout.WheelItem> cats) {
+    public void addItems(List<? extends WheelItem> cats) {
         if (cats == null || cats.isEmpty())
             return;
         if (mItems == null)
@@ -313,8 +309,8 @@ public class WheelLayout extends CircleLayout {
     }
 
     private void loadMore(boolean isNext){
-        if (wheelCallBack !=null)
-            wheelCallBack.loadMore(isNext);
+        if (onLoadMoreListener !=null)
+            onLoadMoreListener.loadMore(isNext);
     }
 
     public WheelItem getSelectedWheelItem(){
@@ -353,15 +349,24 @@ public class WheelLayout extends CircleLayout {
         return null;
     }
 
+    @Override
+    public void onRotationFinished(View view) {
+        if (onRotateListener !=null)
+            onRotateListener.onRotationFinished(view);
+    }
+
     public interface WheelItem{
         String getName();
         long getId();
     }
-    public interface WheelCallBack extends OnRotationFinishedListener{
+
+    public interface OnRotateListener extends OnRotationFinishedListener{
         void onSettleRotation(float endDegree, long duration);
         void onRotate(float degree);
         void onStopAnimation();
-        void loadMore(boolean isNext);
     }
 
+    public interface OnLoadMoreListener {
+        void loadMore(boolean isNext);
+    }
 }
