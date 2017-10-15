@@ -138,14 +138,9 @@ public class CircleLayout extends ViewGroup {
         return angle;
     }
 
-    public void setAngle(float mAngle) {
-        angle = mAngle % 360;
+    public void setAngle(float angle) {
+        this.angle = angle % 360;
         setChildAngles();
-    }
-
-
-    private boolean checkSign(float x,float y){
-        return ((x<0) == (y<0));
     }
 
     public int getSpeed() {
@@ -303,8 +298,9 @@ public class CircleLayout extends ViewGroup {
         int layoutWidth = r - l;
         int layoutHeight = b - t;
         // Override radius here
-        if(radius < 0)
+        if(radius < 0) {
             radius = Math.min(layoutWidth, layoutHeight) / radiusRatio;
+        }
         circleHeight = getHeight();
         circleWidth = getWidth();
         setChildAngles();
@@ -373,10 +369,6 @@ public class CircleLayout extends ViewGroup {
                 if (onItemSelectedListener != null && isRotating) {
                     onItemSelectedListener.onItemSelected(child);
                 }
-                /**
-                 * On Item selected for sub class to update menu item data while scrolling.
-                 */
-                onItemSelected(child);
             }
 
             child.layout(left, top, left + childWidth, top + childHeight);
@@ -384,8 +376,6 @@ public class CircleLayout extends ViewGroup {
             localAngle += angleDelay;
         }
     }
-
-    protected void onItemSelected(View child){}
 
     protected void onFixRotation(View child, float localAngle) {}
 

@@ -31,7 +31,7 @@ import com.szugyi.circlemenu.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WheelLayout extends CircleLayout implements CircleLayout.OnRotationFinishedListener {
+public class WheelLayout extends CircleLayout implements CircleLayout.OnRotationFinishedListener,CircleLayout.OnItemSelectedListener {
     // Background image
     private ImageView bgImageView;
     protected List<WheelItem> mItems;
@@ -42,6 +42,12 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     private final String TAG = "WheelMenu";
     protected OnRotateListener onRotateListener = null;
     protected OnLoadMoreListener onLoadMoreListener = null;
+    protected OnItemSelectedListener onItemSelectedListener = null;
+
+    @Override
+    public void setOnItemSelectedListener(OnItemSelectedListener onItemSelectedListener) {
+        this.onItemSelectedListener = onItemSelectedListener;
+    }
 
     public void setOnRotateListener(OnRotateListener onRotateListener) {
         this.onRotateListener = onRotateListener;
@@ -67,6 +73,7 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     protected void init(TypedArray a) {
         super.init(a);
         setOnRotationFinishedListener(this);
+        setOnItemSelectedListener(this);
     }
 
     public void setBgImageView(ImageView bgImageView) {
@@ -110,7 +117,7 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     }
 
     @Override
-    protected void onItemSelected(View child) {
+    public void onItemSelected(View child) {
         final int childIndex = indexOfChild(child);
         // When Item not changed or list less than equals nr of views.
         if (mSelectedChild == childIndex || mItemCount<=getChildCount())
@@ -128,6 +135,9 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
         Log.d(TAG,"Selected: " + childIndex);
         displayBufferItem(childIndex,next);
         mSelectedChild = childIndex;
+
+        if (onItemSelectedListener !=null)
+            onItemSelectedListener.onItemSelected(child);
     }
 
     @Override
