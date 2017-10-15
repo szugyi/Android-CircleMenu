@@ -54,6 +54,8 @@ public class CircleLayout extends ViewGroup {
         }
 
     }
+    // Constants
+    private final float DEFAULT_RADIUS_RATIO = 3;
 
     // Event listeners
     private OnItemClickListener onItemClickListener = null;
@@ -64,8 +66,7 @@ public class CircleLayout extends ViewGroup {
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
     private float radius = -1;
-    private final float DefaultRadiusRatio = 3;
-    private float radiusRatio = DefaultRadiusRatio;
+    private float radiusRatio = DEFAULT_RADIUS_RATIO;
 
     // Child sizes
     private int maxChildWidth = 0;
@@ -129,7 +130,7 @@ public class CircleLayout extends ViewGroup {
         TypedValue typedValue = new TypedValue();
         radiusRatio = a.getValue(R.styleable.CircleLayout_wheel_radius_ratio, typedValue)
                 ? typedValue.getFloat()
-                : DefaultRadiusRatio;
+                : DEFAULT_RADIUS_RATIO;
         for (FirstChildPosition pos : FirstChildPosition.values()) {
             if (pos.getAngle() == angle) {
                 firstChildPosition = pos;
