@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -127,10 +126,7 @@ public class CircleLayout extends ViewGroup {
         // The angle where the first menu item will be drawn
         angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
         // Get radius ratio
-        TypedValue typedValue = new TypedValue();
-        radiusRatio = a.getValue(R.styleable.CircleLayout_wheel_radius_ratio, typedValue)
-                ? typedValue.getFloat()
-                : DEFAULT_RADIUS_RATIO;
+        radiusRatio = a.getFloat(R.styleable.CircleLayout_wheel_radius_ratio, DEFAULT_RADIUS_RATIO);
         for (FirstChildPosition pos : FirstChildPosition.values()) {
             if (pos.getAngle() == angle) {
                 firstChildPosition = pos;
