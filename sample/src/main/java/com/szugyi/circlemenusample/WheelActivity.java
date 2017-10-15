@@ -57,7 +57,7 @@ public class WheelActivity extends AppCompatActivity{
         scWheel.setBgImageView((ImageView) findViewById(R.id.sc_bg));
         final ImageView sprLeft = (ImageView) findViewById(R.id.spr_left);
         final ImageView sprRight = (ImageView) findViewById(R.id.spr_right);
-        scWheel.setOnRotateListener(new WheelLayout.OnRotateListener() {
+        scWheel.setOnRotationChangedListener(new WheelLayout.OnRotationChangedListener() {
             @Override
             public void onRotationFinished(View view) {
                 sprRight.setRotation(30);
@@ -81,7 +81,7 @@ public class WheelActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onSettleRotation(float endDegree, long duration) {
+            public void onAmimationStarted(float endDegree, long duration) {
                 if (animator != null && animator.isRunning() || Math.abs(sprRight.getRotation() -30) < 1) {
                     return;
                 }
@@ -101,7 +101,7 @@ public class WheelActivity extends AppCompatActivity{
             }
         });
 
-        mcWheel.setOnRotateListener(new WheelLayout.OnRotateListener() {
+        mcWheel.setOnRotationChangedListener(new WheelLayout.OnRotationChangedListener() {
             @Override
             public void onRotationFinished(View view) {
                 sprLeft.setRotation(-30);
@@ -127,7 +127,7 @@ public class WheelActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onSettleRotation(float endDegree, long duration) {
+            public void onAmimationStarted(float endDegree, long duration) {
                 if (animator != null && animator.isRunning() || Math.abs(sprLeft.getRotation() +30) < 1) {
                     return;
                 }

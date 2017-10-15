@@ -20,7 +20,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -34,13 +33,12 @@ import java.util.List;
 public class WheelLayout extends CircleLayout implements CircleLayout.OnRotationFinishedListener,CircleLayout.OnItemSelectedListener {
     // Background image
     private ImageView bgImageView;
-    protected List<WheelItem> mItems;
+    protected List<WheelItem> wheelItems;
     private ObjectAnimator animator;
-    private int mItemCount;
-    private int mCurrentItem;
-    private int mSelectedChild;
-    private final String TAG = "WheelMenu";
-    protected OnRotateListener onRotateListener = null;
+    private int itemCount;
+    private int currentItem;
+    private int selectedChild;
+    protected OnRotationChangedListener onRotationChangedListener = null;
     protected OnLoadMoreListener onLoadMoreListener = null;
     protected OnItemSelectedListener onItemSelectedListener = null;
 
@@ -49,8 +47,8 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
         this.onItemSelectedListener = onItemSelectedListener;
     }
 
-    public void setOnRotateListener(OnRotateListener onRotateListener) {
-        this.onRotateListener = onRotateListener;
+    public void setOnRotationChangedListener(OnRotationChangedListener onRotationChangedListener) {
+        this.onRotationChangedListener = onRotationChangedListener;
     }
 
     public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
@@ -72,6 +70,7 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     @Override
     protected void init(TypedArray a) {
         super.init(a);
+        wheelItems = new ArrayList<>();
         setOnRotationFinishedListener(this);
         setOnItemSelectedListener(this);
     }
@@ -90,8 +89,8 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
         super.rotateButtons(degrees);
         if (bgImageView !=null)
             bgImageView.setRotation(bgImageView.getRotation()+degrees);
-        if (onRotateListener !=null)
-            onRotateListener.onRotate(degrees);
+        if (onRotationChangedListener !=null)
+            onRotationChangedListener.onRotate(degrees);
         onFixWheelItemRotation(); // Fixing wheel items rotate angle.
     }
 
@@ -102,7 +101,7 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
                 continue;
             }
             final float localAngle = (float) child.getTag();
-            child.setRotation(localAngle + getFirstChildPosition().getAngle());  // Fix view rotation of children
+            child.setRotation(localAngle + getFirstChildPosition().getAngle());  // Fix view rotation of each child
         }
     }
 
@@ -110,8 +109,8 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     protected void animateTo(float endDegree, long duration) {
         if (bgImageView !=null)
             rotateBackground(getAngle(),endDegree, duration);
-        if (onRotateListener !=null)
-            onRotateListener.onSettleRotation(endDegree, duration);
+        if (onRotationChangedListener !=null)
+            onRotationChangedListener.onAmimationStarted(endDegree, duration);
         super.animateTo(endDegree, duration);
     }
 
@@ -121,28 +120,28 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     }
 
     private void resetPage() {
-        mCurrentItem = 0;
+        currentItem = 0;
     }
 
     @Override
     public void onItemSelected(View child) {
         final int childIndex = indexOfChild(child);
         // When Item not changed or list less than equals nr of views.
-        if (mSelectedChild == childIndex || mItemCount<=getChildCount())
+        if (selectedChild == childIndex || itemCount <=getChildCount())
             return;
 
-        final boolean next = (mSelectedChild == getChildCount()-1 && childIndex == 0)
-                || ((childIndex != getChildCount()-1 || mSelectedChild!=0) && childIndex > mSelectedChild);
+        final boolean next = (selectedChild == getChildCount()-1 && childIndex == 0)
+                || ((childIndex != getChildCount()-1 || selectedChild !=0) && childIndex > selectedChild);
 
-        mCurrentItem += next ? +1 : -1;
-        if (mCurrentItem <0)
-            mCurrentItem = mItemCount -1;
-        else if (mCurrentItem >= mItemCount)
-            mCurrentItem = 0;
-        Log.d(TAG,"CurrentItem: " + mCurrentItem);
-        Log.d(TAG,"Selected: " + childIndex);
+        currentItem += next ? +1 : -1;
+        if (currentItem <0)
+            currentItem = itemCount -1;
+        else if (currentItem >= itemCount)
+            currentItem = 0;
+//        Log.d(TAG,"CurrentItem: " + currentItem);
+//        Log.d(TAG,"Selected: " + childIndex);
         displayBufferItem(childIndex,next);
-        mSelectedChild = childIndex;
+        selectedChild = childIndex;
 
         if (onItemSelectedListener !=null)
             onItemSelectedListener.onItemSelected(child);
@@ -155,8 +154,8 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
             animator.cancel();
             animator = null;
         }
-        if (onRotateListener !=null)
-            onRotateListener.onStopAnimation();
+        if (onRotationChangedListener !=null)
+            onRotationChangedListener.onStopAnimation();
     }
 
     /**
@@ -185,15 +184,12 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
 
     protected void clear() {
         resetRotation();
-        if (mItems == null)
-            new ArrayList<WheelItem>(0);
-        else
-            mItems.clear();
+        wheelItems.clear();
         clearWheel();
     }
 
     private void displayData() {
-        if (mItems !=null && !mItems.isEmpty())
+        if (!wheelItems.isEmpty())
             initWheelData();
     }
 
@@ -213,7 +209,7 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
 
     private void initWheelData() {
         setPageCount();
-        if (mItemCount> getChildCount())
+        if (itemCount > getChildCount())
             displayFirstPageMirror();
         else
             displayFirstPage();
@@ -230,24 +226,24 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
         final int BUFFER_COUNT = 4;
 
         if (next) {
-            itemIndex = mCurrentItem + halfItems;
+            itemIndex = currentItem + halfItems;
             viewIndex = selectedIndex + halfItems - 1;
-            if (itemIndex + BUFFER_COUNT >= mItemCount)
+            if (itemIndex + BUFFER_COUNT >= itemCount)
                 loadMore(true);  // Load more
         }else {
-            itemIndex = mCurrentItem - halfItems;
+            itemIndex = currentItem - halfItems;
             if (itemIndex - BUFFER_COUNT < 0)
                 loadMore(false); // Load more from Z-A
 
             if (itemIndex <0)
-                itemIndex += mItemCount;
+                itemIndex += itemCount;
             viewIndex = selectedIndex + halfItems + 1;
         }
 
-        final View children = getChildAt(viewIndex); // Get View
+        final View child = getChildAt(viewIndex); // Get View
         final WheelItem item = getItem(itemIndex); // Get item
-        if (children != null && item != null)
-            setChildrenValue(children, item);
+        if (child != null && item != null)
+            setChildrenValue(child, item);
     }
 
     /**
@@ -256,11 +252,11 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
     private void displayFirstPage() {
         // Display next items
         for (int index = 0; index < getChildCount(); index++) {
-            final View children = getChildAt(index); // Get View
+            final View child = getChildAt(index); // Get View
             final WheelItem item = getItem(index); // Get item
-            if (children == null || item == null)
+            if (child == null || item == null)
                 continue;
-            setChildrenValue(children, item);
+            setChildrenValue(child, item);
         }
     }
 
@@ -271,21 +267,21 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
         final int itemCount = getChildCount()/2;
         // Display next items
         for (int index=0; index< itemCount; index++){
-            final View children = getChildAt(index); // Get View
+            final View child = getChildAt(index); // Get View
             final WheelItem item = getItem(index); // Get item
-            if (children == null || item == null)
+            if (child == null || item == null)
                 continue;
-            setChildrenValue(children, item);
+            setChildrenValue(child, item);
         }
 
-        int itemIndexStartReversed = mItemCount - itemCount;
+        int itemIndexStartReversed = this.itemCount - itemCount;
         // Display previous items
         for (int index=getChildCount()/2; index< getChildCount(); index++){
-            final View children = getChildAt(index); // Get View
+            final View child = getChildAt(index); // Get View
             final WheelItem item = getItem(itemIndexStartReversed); // Get item
-            if (children == null || item == null)
+            if (child == null || item == null)
                 continue;
-            setChildrenValue(children, item);
+            setChildrenValue(child, item);
             itemIndexStartReversed++; // update Item index
         }
     }
@@ -295,35 +291,35 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
         return super.getChildAt(index%getChildCount());
     }
 
-    private void setChildrenValue(View children, WheelItem item) {
-        if (children instanceof TextView) {
-            ((TextView) children).setText(item.getName());
-            children.setTag(R.id.wheel_item_id,item);
+    private void setChildrenValue(View child, WheelItem item) {
+        if (child instanceof TextView) {
+            ((TextView) child).setText(item.getName());
+            child.setTag(R.id.wheel_item_id,item);
         }
     }
 
-    public void addItems(List<? extends WheelItem> cats) {
-        if (cats == null || cats.isEmpty())
+    public void addItems(List<? extends WheelItem> items) {
+        if (items == null || items.isEmpty())
             return;
-        if (mItems == null)
-            mItems = new ArrayList<>();
-        mItems.addAll(cats);
+        if (wheelItems == null)
+            wheelItems = new ArrayList<>();
+        wheelItems.addAll(items);
         setPageCount();
     }
 
     private void setPageCount() {
-        mItemCount = mItems.size();
+        itemCount = wheelItems.size();
     }
 
     public int getItemCount(){
-        return mItems !=null ? mItems.size() : -1;
+        return wheelItems.size();
     }
 
     private WheelItem getItem(int index) {
-        if (mItems ==null || mItems.isEmpty() ||  index < 0)
+        if (wheelItems ==null || wheelItems.isEmpty() ||  index < 0)
             return null;
-        index = index%mItemCount; // repeat displaying items on wheel
-        return mItems.get(index);
+        index = index% itemCount; // repeat displaying items on wheel
+        return wheelItems.get(index);
     }
 
     private void loadMore(boolean isNext){
@@ -369,17 +365,12 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
 
     @Override
     public void onRotationFinished(View view) {
-        if (onRotateListener !=null)
-            onRotateListener.onRotationFinished(view);
+        if (onRotationChangedListener !=null)
+            onRotationChangedListener.onRotationFinished(view);
     }
 
-    public interface WheelItem{
-        String getName();
-        long getId();
-    }
-
-    public interface OnRotateListener extends OnRotationFinishedListener{
-        void onSettleRotation(float endDegree, long duration);
+    public interface OnRotationChangedListener extends OnRotationFinishedListener{
+        void onAmimationStarted(float endDegree, long duration);
         void onRotate(float degree);
         void onStopAnimation();
     }
