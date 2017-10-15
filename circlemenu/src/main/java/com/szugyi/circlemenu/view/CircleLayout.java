@@ -21,7 +21,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -133,7 +132,6 @@ public class CircleLayout extends ViewGroup {
                 break;
             }
         }
-        Log.d("WheelMenu","radiusRatio:" + radiusRatio);
     }
 
     public float getAngle() {
