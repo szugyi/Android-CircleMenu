@@ -372,12 +372,9 @@ public class CircleLayout extends ViewGroup {
             }
 
             child.layout(left, top, left + childWidth, top + childHeight);
-            onFixRotation(child,localAngle);
             localAngle += angleDelay;
         }
     }
-
-    protected void onFixRotation(View child, float localAngle) {}
 
     protected void animateTo(final float endDegree, long duration) {
         if (animator != null && animator.isRunning() || Math.abs(angle - endDegree) < 1) {
@@ -399,8 +396,9 @@ public class CircleLayout extends ViewGroup {
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                if (wasCanceled)
+                if (wasCanceled) {
                     return;
+                }
                 if (onRotationFinishedListener != null) {
                     View view = getSelectedItem();
                     onRotationFinishedListener.onRotationFinished(view);

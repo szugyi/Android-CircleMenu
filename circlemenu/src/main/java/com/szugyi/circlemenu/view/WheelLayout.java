@@ -1,5 +1,5 @@
 /*
- * Copyright dmitry.zaicew@gmail.com Dmitry Zaitsev
+ * Copyright eng.khaled.lela@gmail.com KhaledLela on 9/30/17.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -92,10 +92,18 @@ public class WheelLayout extends CircleLayout implements CircleLayout.OnRotation
             bgImageView.setRotation(bgImageView.getRotation()+degrees);
         if (onRotateListener !=null)
             onRotateListener.onRotate(degrees);
+        onFixWheelItemRotation(); // Fixing wheel items rotate angle.
     }
 
-    protected void onFixRotation(View child, float localAngle) {
-        child.setRotation(localAngle + getFirstChildPosition().getAngle());  // Fix view rotation of children
+    protected void onFixWheelItemRotation() {
+        for (int i = 0; i < getItemCount(); i++) {
+            final View child = getChildAt(i);
+            if (child.getVisibility() == GONE) {
+                continue;
+            }
+            final float localAngle = (float) child.getTag();
+            child.setRotation(localAngle + getFirstChildPosition().getAngle());  // Fix view rotation of children
+        }
     }
 
     @Override
