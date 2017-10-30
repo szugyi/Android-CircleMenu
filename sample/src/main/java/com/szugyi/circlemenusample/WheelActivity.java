@@ -9,7 +9,8 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import com.szugyi.circlemenu.view.WheelLayout;
+import com.szugyi.circlemenu.view.TextCircleWheel;
+import com.szugyi.circlemenu.view.WheelTextItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +20,8 @@ import java.util.List;
  */
 
 public class WheelActivity extends AppCompatActivity{
-    private WheelLayout mcWheel;
-    private WheelLayout scWheel;
+    private TextCircleWheel mainCategoryWheel;
+    private TextCircleWheel subCategoryWheel;
     private final int ITEM_LIMIT = 20;
 
     @Override
@@ -28,36 +29,34 @@ public class WheelActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wheel);
         final View wheelView = findViewById(R.id.wheel_layout);
-        mcWheel = (WheelLayout) findViewById(R.id.mc_wheel);
-        scWheel = (WheelLayout) findViewById(R.id.sc_wheel);
+        mainCategoryWheel = (TextCircleWheel) findViewById(R.id.main_category_wheel);
+        subCategoryWheel = (TextCircleWheel) findViewById(R.id.sub_category_wheel);
 
         wheelView.post(new Runnable() {
             @Override
             public void run() {
                 final int offset = getResources().getDimensionPixelSize(R.dimen.spin_pointer_width)/2;
-                int width = mcWheel.getWidth() - offset;
+                int width = mainCategoryWheel.getWidth() - offset;
 
-                int height = mcWheel.getHeight();
+                int height = mainCategoryWheel.getHeight();
                 int mSize = Math.min(width,height);
 
-                ((FrameLayout.LayoutParams)mcWheel.getLayoutParams()).width = mSize;
-                ((FrameLayout.LayoutParams)mcWheel.getLayoutParams()).height = mSize;
+                ((FrameLayout.LayoutParams)mainCategoryWheel.getLayoutParams()).width = mSize;
+                ((FrameLayout.LayoutParams)mainCategoryWheel.getLayoutParams()).height = mSize;
 
-                ((FrameLayout.LayoutParams)scWheel.getLayoutParams()).width = mSize;
-                ((FrameLayout.LayoutParams)scWheel.getLayoutParams()).height = mSize;
+                ((FrameLayout.LayoutParams)subCategoryWheel.getLayoutParams()).width = mSize;
+                ((FrameLayout.LayoutParams)subCategoryWheel.getLayoutParams()).height = mSize;
             }
         });
         initWheel();
-        loadMC();
-        loadSCByMC(mcWheel.getSelectedWheelItem());
+        loadMainCategory();
+        loadSubCategoryByMainCategory(mainCategoryWheel.getSelectedWheelItem());
     }
 
     private void initWheel() {
-        mcWheel.setBgImageView((ImageView) findViewById(R.id.mc_bg));
-        scWheel.setBgImageView((ImageView) findViewById(R.id.sc_bg));
         final ImageView sprLeft = (ImageView) findViewById(R.id.spr_left);
         final ImageView sprRight = (ImageView) findViewById(R.id.spr_right);
-        scWheel.setOnRotationChangedListener(new WheelLayout.OnRotationChangedListener() {
+        subCategoryWheel.setOnRotationChangedListener(new TextCircleWheel.OnRotationChangedListener() {
             @Override
             public void onRotationFinished(View view) {
                 sprRight.setRotation(30);
@@ -81,7 +80,7 @@ public class WheelActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onAmimationStarted(float endDegree, long duration) {
+            public void onAnimationStarted(float endDegree, long duration) {
                 if (animator != null && animator.isRunning() || Math.abs(sprRight.getRotation() -30) < 1) {
                     return;
                 }
@@ -92,20 +91,20 @@ public class WheelActivity extends AppCompatActivity{
             }
         });
 
-        // Load more from server : sort [DEC | ASC]
-        scWheel.setOnLoadMoreListener(new WheelLayout.OnLoadMoreListener() {
+        // Load more from server : sort [DEC | ASubCategory]
+        subCategoryWheel.setOnLoadMoreListener(new TextCircleWheel.OnLoadMoreListener() {
             @Override
-            public void loadMore(boolean isNext) {
-                loadSCByMC(mcWheel.getSelectedWheelItem(),isNext);
-                Log.d("WheelMenu","Load more Page: " + mcWheel.getItemCount()/ITEM_LIMIT);
+            public void loadMore(int direction) {
+                loadSubCategoryByMainCategory(mainCategoryWheel.getSelectedWheelItem(),direction);
+                Log.d("WheelMenu","Load more Page: " + mainCategoryWheel.getItemCount()/ITEM_LIMIT);
             }
         });
 
-        mcWheel.setOnRotationChangedListener(new WheelLayout.OnRotationChangedListener() {
+        mainCategoryWheel.setOnRotationChangedListener(new TextCircleWheel.OnRotationChangedListener() {
             @Override
             public void onRotationFinished(View view) {
                 sprLeft.setRotation(-30);
-                loadSCByMC(mcWheel.getSelectedWheelItem());
+                loadSubCategoryByMainCategory(mainCategoryWheel.getSelectedWheelItem());
             }
 
             private ObjectAnimator animator;
@@ -127,7 +126,7 @@ public class WheelActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onAmimationStarted(float endDegree, long duration) {
+            public void onAnimationStarted(float endDegree, long duration) {
                 if (animator != null && animator.isRunning() || Math.abs(sprLeft.getRotation() +30) < 1) {
                     return;
                 }
@@ -139,39 +138,39 @@ public class WheelActivity extends AppCompatActivity{
         });
     }
 
-    private void loadSCByMC(WheelLayout.WheelItem mc) {
-        loadSCByMC(mc, 0, ITEM_LIMIT);
+    private void loadSubCategoryByMainCategory(WheelTextItem mainCategory) {
+        loadSubCategoryByMainCategory(mainCategory, 0, ITEM_LIMIT);
     }
 
-    private void loadSCByMC(WheelLayout.WheelItem mc,boolean isNext) {
-        final int itemCount = scWheel.getItemCount();
-        final int start = isNext ? itemCount : itemCount + ITEM_LIMIT;
-        final int end = isNext ? itemCount + ITEM_LIMIT : itemCount;
-        loadSCByMC(mc, start, end);
+    private void loadSubCategoryByMainCategory(WheelTextItem mainCategory, int direction) {
+        final int itemCount = subCategoryWheel.getItemCount();
+        final int start = direction == TextCircleWheel.OnLoadMoreListener.DIRECTION_DESC ? itemCount : itemCount + ITEM_LIMIT;
+        final int end = direction == TextCircleWheel.OnLoadMoreListener.DIRECTION_DESC ? itemCount + ITEM_LIMIT : itemCount;
+        loadSubCategoryByMainCategory(mainCategory, start, end);
     }
 
-    private void loadSCByMC(WheelLayout.WheelItem mc, int start, int end) {
+    private void loadSubCategoryByMainCategory(WheelTextItem mainCategory, int start, int end) {
         List<MenuItem> items = new ArrayList<>(ITEM_LIMIT);
         for (int i=start ; i<end;i++){
             final MenuItem item = new MenuItem();
             item.setId(i);
-            item.setName(mc.getName() +"-->" +  i);
+            item.setName(mainCategory.getName() +"-->" +  i);
             items.add(item);
         }
         if (start == 0 )
-            scWheel.setItems(items,true);
+            subCategoryWheel.setItems(items);
         else
-            scWheel.addItems(items);
+            subCategoryWheel.addItems(items);
     }
 
-    private void loadMC() {
+    private void loadMainCategory() {
         List<MenuItem> items = new ArrayList<>(ITEM_LIMIT);
         for (int i=0 ; i<ITEM_LIMIT;i++){
             final MenuItem item = new MenuItem();
             item.setId(i);
-            item.setName("WheelItem " + i);
+            item.setName("WheelTextItem " + i);
             items.add(item);
         }
-        mcWheel.setItems(items,true);
+        mainCategoryWheel.setItems(items);
     }
 }

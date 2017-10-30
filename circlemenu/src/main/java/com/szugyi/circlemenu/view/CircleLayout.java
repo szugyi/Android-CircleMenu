@@ -60,6 +60,7 @@ public class CircleLayout extends ViewGroup {
     private OnItemSelectedListener onItemSelectedListener = null;
     private OnCenterClickListener onCenterClickListener = null;
     private OnRotationFinishedListener onRotationFinishedListener = null;
+    private OnChildrenAngleChanged onChildrenAngleChanged = null;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
@@ -111,6 +112,14 @@ public class CircleLayout extends ViewGroup {
         }
         // Needed for the ViewGroup to be drawn
         setWillNotDraw(false);
+    }
+
+    /**
+     * Get padding ratio of view radius.
+     * @return
+     */
+    protected float getRadiusRatio() {
+        return radiusRatio;
     }
 
     /**
@@ -372,6 +381,10 @@ public class CircleLayout extends ViewGroup {
             }
 
             child.layout(left, top, left + childWidth, top + childHeight);
+
+            if (onChildrenAngleChanged !=null)
+                onChildrenAngleChanged.onChildAngleChanged(child,localAngle);
+
             localAngle += angleDelay;
         }
     }
@@ -647,5 +660,14 @@ public class CircleLayout extends ViewGroup {
     public void setOnRotationFinishedListener(
             OnRotationFinishedListener onRotationFinishedListener) {
         this.onRotationFinishedListener = onRotationFinishedListener;
+    }
+
+
+    public interface OnChildrenAngleChanged {
+        void onChildAngleChanged(View child, float localAngle);
+    }
+
+    public void setOnChildrenAngleChanged(OnChildrenAngleChanged onChildrenAngleChanged) {
+        this.onChildrenAngleChanged = onChildrenAngleChanged;
     }
 }

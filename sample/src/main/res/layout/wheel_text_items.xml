@@ -21,8 +21,7 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="45"/>
+        android:textSize="@dimen/txt_h4"/>
 
     <TextView
         android:id="@+id/item_3"
@@ -31,8 +30,7 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="90"/>
+        android:textSize="@dimen/txt_h4"/>
 
     <TextView
         android:id="@+id/item_4"
@@ -41,8 +39,7 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="135"/>
+        android:textSize="@dimen/txt_h4"/>
 
     <TextView
         android:id="@+id/item_5"
@@ -51,8 +48,7 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="180"/>
+        android:textSize="@dimen/txt_h4"/>
 
     <TextView
         android:id="@+id/item_6"
@@ -61,8 +57,7 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="-135" />
+        android:textSize="@dimen/txt_h4"/>
 
     <TextView
         android:id="@+id/item_7"
@@ -71,8 +66,7 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="-90" />
+        android:textSize="@dimen/txt_h4"/>
 
     <TextView
         android:id="@+id/item_8"
@@ -81,6 +75,5 @@
         android:lines="2"
         android:textColor="@android:color/white"
         android:gravity="center"
-        android:textSize="@dimen/txt_h4"
-        android:rotation="-45"/>
+        android:textSize="@dimen/txt_h4"/>
 </merge>

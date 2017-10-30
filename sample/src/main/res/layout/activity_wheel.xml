@@ -37,57 +37,34 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:android="http://schemas.android.com/apk/res/android">
 
-        <FrameLayout
-            android:id="@+id/mcLayout"
+        <com.szugyi.circlemenu.view.TextCircleWheel
+            android:id="@+id/main_category_wheel"
+            android:layout_marginLeft="@dimen/half_wheel_margin"
+            android:layout_marginStart="@dimen/half_wheel_margin"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="@dimen/spin_margin"
-            android:layout_height="wrap_content">
+            app:speed="50"
+            app:wheel_bg="@drawable/spin_wheel"
+            app:wheel_radius_ratio="@dimen/spin_radius_ratio"
+            app:firstChildPosition="East">
+            <include layout="@layout/wheel_text_items" />
+        </com.szugyi.circlemenu.view.TextCircleWheel>
 
-            <ImageView
-                android:id="@+id/mc_bg"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/spin_wheel"
-                android:layout_height="wrap_content" />
 
-            <com.szugyi.circlemenu.view.WheelLayout
-                android:id="@+id/mc_wheel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:speed="50"
-                app:wheel_radius_ratio="@dimen/spin_radius_ratio"
-                app:firstChildPosition="East">
-                <include layout="@layout/wheel_items" />
-            </com.szugyi.circlemenu.view.WheelLayout>
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/scLayout"
+        <com.szugyi.circlemenu.view.TextCircleWheel
+            android:layout_marginRight="@dimen/half_wheel_margin"
+            android:layout_marginEnd="@dimen/half_wheel_margin"
+            android:id="@+id/sub_category_wheel"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginRight="@dimen/spin_margin"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/sc_bg"
-                android:layout_width="wrap_content"
-                android:layout_gravity="center"
-                android:src="@drawable/spin_wheel"
-                android:layout_height="wrap_content" />
-
-            <com.szugyi.circlemenu.view.WheelLayout
-                android:id="@+id/sc_wheel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:speed="75"
-                app:wheel_radius_ratio="@dimen/spin_radius_ratio"
-                app:firstChildPosition="West">
-                <include layout="@layout/wheel_items" />
-            </com.szugyi.circlemenu.view.WheelLayout>
-        </FrameLayout>
+            app:speed="75"
+            app:wheel_bg="@drawable/spin_wheel"
+            app:wheel_radius_ratio="@dimen/spin_radius_ratio"
+            app:firstChildPosition="West">
+            <include layout="@layout/wheel_text_items" />
+        </com.szugyi.circlemenu.view.TextCircleWheel>
         <FrameLayout
             android:id="@+id/spin_spr_view"
             android:layout_gravity="center"

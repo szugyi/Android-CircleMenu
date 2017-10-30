@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="spin_item_width">150dp</dimen>
-    <dimen name="spin_margin">-350dp</dimen>
+    <dimen name="half_wheel_margin">-350dp</dimen>
     <item name="spin_radius_ratio" type="dimen" format="float">4.5</item>
     <dimen name="spin_pointer_width">120dp</dimen>
 

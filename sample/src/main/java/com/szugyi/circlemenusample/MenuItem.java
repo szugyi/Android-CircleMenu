@@ -1,12 +1,12 @@
 package com.szugyi.circlemenusample;
 
-import com.szugyi.circlemenu.view.WheelLayout;
+import com.szugyi.circlemenu.view.WheelTextItem;
 
 /**
  * Created by KhaledLela on 9/30/17.
  */
 
-public class MenuItem implements WheelLayout.WheelItem {
+public class MenuItem implements WheelTextItem {
     private long id;
     private String name;
 
