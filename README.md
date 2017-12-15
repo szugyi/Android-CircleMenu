@@ -2,6 +2,10 @@ Circle Menu
 ==========
 This is a simple implementation of a circle menu for Android applications.
 
+Deprecated
+-----------
+ConstraintLayout 1.1.0 is now supporting [circular positioning](https://developer.android.com/reference/android/support/constraint/ConstraintLayout.html#CircularPositioning), which makes the use of this library deprecated.
+
 Screenshots
 -----------
 [![Circle menu screenshot](https://github.com/szugyi/CircleMenu/raw/master/screenshots/shot1.png)](#Screenshot)
