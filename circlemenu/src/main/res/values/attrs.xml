@@ -18,6 +18,8 @@
         <attr name="isRotating" format="boolean" />
         <attr name="radius" format="dimension" />
         <attr name="speed" format="integer" />
+        <attr name="wheel_radius_ratio" format="float" />
+        <attr name="wheel_bg" format="reference" />
         <attr name="firstChildPosition">
             <enum name="East" value="0" />
             <enum name="South" value="90" />

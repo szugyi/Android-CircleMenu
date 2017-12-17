@@ -52,16 +52,20 @@ public class CircleLayout extends ViewGroup {
         }
 
     }
+    // Constants
+    private final float DEFAULT_RADIUS_RATIO = 3;
 
     // Event listeners
     private OnItemClickListener onItemClickListener = null;
     private OnItemSelectedListener onItemSelectedListener = null;
     private OnCenterClickListener onCenterClickListener = null;
     private OnRotationFinishedListener onRotationFinishedListener = null;
+    private OnChildrenAngleChanged onChildrenAngleChanged = null;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
     private float radius = -1;
+    private float radiusRatio = DEFAULT_RADIUS_RATIO;
 
     // Child sizes
     private int maxChildWidth = 0;
@@ -98,40 +102,44 @@ public class CircleLayout extends ViewGroup {
 
     public CircleLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        init(attrs);
+        gestureDetector = new GestureDetector(getContext(), new MyGestureListener());
+        quadrantTouched = new boolean[]{false, false, false, false, false};
+
+        if (attrs != null) {
+            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
+            init(a);
+            a.recycle();
+        }
+        // Needed for the ViewGroup to be drawn
+        setWillNotDraw(false);
+    }
+
+    /**
+     * Get padding ratio of view radius.
+     * @return
+     */
+    protected float getRadiusRatio() {
+        return radiusRatio;
     }
 
     /**
      * Initializes the ViewGroup and modifies it's default behavior by the
      * passed attributes
      *
-     * @param attrs the attributes used to modify default settings
      */
-    protected void init(AttributeSet attrs) {
-        gestureDetector = new GestureDetector(getContext(),
-                new MyGestureListener());
-        quadrantTouched = new boolean[]{false, false, false, false, false};
-
-        if (attrs != null) {
-            TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.CircleLayout);
-
-            speed = a.getInt(R.styleable.CircleLayout_speed, speed);
-            radius = a.getDimension(R.styleable.CircleLayout_radius, radius);
-            isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
-
-            // The angle where the first menu item will be drawn
-            angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
-            for (FirstChildPosition pos : FirstChildPosition.values()) {
-                if (pos.getAngle() == angle) {
-                    firstChildPosition = pos;
-                    break;
-                }
+    protected void init(TypedArray a) {
+        speed = a.getInt(R.styleable.CircleLayout_speed, speed);
+        radius = a.getDimension(R.styleable.CircleLayout_radius, radius);
+        isRotating = a.getBoolean(R.styleable.CircleLayout_isRotating, isRotating);
+        // The angle where the first menu item will be drawn
+        angle = a.getInt(R.styleable.CircleLayout_firstChildPosition, (int) angle);
+        // Get radius ratio
+        radiusRatio = a.getFloat(R.styleable.CircleLayout_wheel_radius_ratio, DEFAULT_RADIUS_RATIO);
+        for (FirstChildPosition pos : FirstChildPosition.values()) {
+            if (pos.getAngle() == angle) {
+                firstChildPosition = pos;
+                break;
             }
-
-            a.recycle();
-
-            // Needed for the ViewGroup to be drawn
-            setWillNotDraw(false);
         }
     }
 
@@ -298,12 +306,10 @@ public class CircleLayout extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         int layoutWidth = r - l;
         int layoutHeight = b - t;
-
+        // Override radius here
         if(radius < 0) {
-            radius = (layoutWidth <= layoutHeight) ? layoutWidth / 3
-                    : layoutHeight / 3;
+            radius = Math.min(layoutWidth, layoutHeight) / radiusRatio;
         }
-
         circleHeight = getHeight();
         circleWidth = getWidth();
         setChildAngles();
@@ -331,7 +337,7 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
-    private void rotateButtons(float degrees) {
+    protected void rotateButtons(float degrees) {
         angle += degrees;
         setChildAngles();
     }
@@ -375,15 +381,18 @@ public class CircleLayout extends ViewGroup {
             }
 
             child.layout(left, top, left + childWidth, top + childHeight);
+
+            if (onChildrenAngleChanged !=null)
+                onChildrenAngleChanged.onChildAngleChanged(child,localAngle);
+
             localAngle += angleDelay;
         }
     }
 
-    private void animateTo(float endDegree, long duration) {
+    protected void animateTo(final float endDegree, long duration) {
         if (animator != null && animator.isRunning() || Math.abs(angle - endDegree) < 1) {
             return;
         }
-
         animator = ObjectAnimator.ofFloat(CircleLayout.this, "angle", angle, endDegree);
         animator.setDuration(duration);
         animator.setInterpolator(new DecelerateInterpolator());
@@ -403,7 +412,6 @@ public class CircleLayout extends ViewGroup {
                 if (wasCanceled) {
                     return;
                 }
-
                 if (onRotationFinishedListener != null) {
                     View view = getSelectedItem();
                     onRotationFinishedListener.onRotationFinished(view);
@@ -418,7 +426,7 @@ public class CircleLayout extends ViewGroup {
         animator.start();
     }
 
-    private void stopAnimation() {
+    protected void stopAnimation() {
         if (animator != null && animator.isRunning()) {
             animator.cancel();
             animator = null;
@@ -618,6 +626,7 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
+
     public interface OnItemClickListener {
         void onItemClick(View view);
     }
@@ -651,5 +660,14 @@ public class CircleLayout extends ViewGroup {
     public void setOnRotationFinishedListener(
             OnRotationFinishedListener onRotationFinishedListener) {
         this.onRotationFinishedListener = onRotationFinishedListener;
+    }
+
+
+    public interface OnChildrenAngleChanged {
+        void onChildAngleChanged(View child, float localAngle);
+    }
+
+    public void setOnChildrenAngleChanged(OnChildrenAngleChanged onChildrenAngleChanged) {
+        this.onChildrenAngleChanged = onChildrenAngleChanged;
     }
 }

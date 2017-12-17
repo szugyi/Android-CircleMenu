@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:showIn="@layout/activity_wheel">
+
+
+    <TextView
+        android:id="@+id/item_1"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/item_2"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+
+    <TextView
+        android:id="@+id/item_3"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+
+    <TextView
+        android:id="@+id/item_4"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+
+    <TextView
+        android:id="@+id/item_5"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+
+    <TextView
+        android:id="@+id/item_6"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+
+    <TextView
+        android:id="@+id/item_7"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+
+    <TextView
+        android:id="@+id/item_8"
+        android:layout_width="@dimen/spin_item_width"
+        android:layout_height="wrap_content"
+        android:lines="2"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:textSize="@dimen/txt_h4"/>
+</merge>

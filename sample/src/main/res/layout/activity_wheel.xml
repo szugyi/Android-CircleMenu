@@ -1,0 +1,94 @@
+<!--
+   Copyright 2013 Csaba Szugyiczki
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SampleDynamicActivity">
+
+    <TextView
+        android:id="@+id/desc_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="8dp"
+        android:text="Load infinity itemsload more from server and change space between items and center using wheel_radius_ratio"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <FrameLayout
+        android:id="@+id/wheel_layout"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_below="@+id/desc_textView"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <com.szugyi.circlemenu.view.TextCircleWheel
+            android:id="@+id/main_category_wheel"
+            android:layout_marginLeft="@dimen/half_wheel_margin"
+            android:layout_marginStart="@dimen/half_wheel_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:speed="50"
+            app:wheel_bg="@drawable/spin_wheel"
+            app:wheel_radius_ratio="@dimen/spin_radius_ratio"
+            app:firstChildPosition="East">
+            <include layout="@layout/wheel_text_items" />
+        </com.szugyi.circlemenu.view.TextCircleWheel>
+
+
+        <com.szugyi.circlemenu.view.TextCircleWheel
+            android:layout_marginRight="@dimen/half_wheel_margin"
+            android:layout_marginEnd="@dimen/half_wheel_margin"
+            android:id="@+id/sub_category_wheel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:speed="75"
+            app:wheel_bg="@drawable/spin_wheel"
+            app:wheel_radius_ratio="@dimen/spin_radius_ratio"
+            app:firstChildPosition="West">
+            <include layout="@layout/wheel_text_items" />
+        </com.szugyi.circlemenu.view.TextCircleWheel>
+        <FrameLayout
+            android:id="@+id/spin_spr_view"
+            android:layout_gravity="center"
+            android:layout_width="@dimen/spin_pointer_width"
+            android:layout_height="@dimen/spin_pointer_width">
+            <ImageView
+                android:id="@+id/spr_left"
+                android:layout_width="wrap_content"
+                android:src="@drawable/spin_wheel_spr_blue"
+                android:layout_gravity="left|center_vertical"
+                android:rotation="-30"
+                android:transformPivotX="@dimen/spin_pointer_pivot_x_left"
+                android:transformPivotY="@dimen/spin_pointer_pivot_y_left"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/spr_right"
+                android:layout_width="wrap_content"
+                android:src="@drawable/spin_wheel_spr_golden"
+                android:layout_gravity="right|center_vertical"
+                android:rotation="30"
+                android:transformPivotX="@dimen/spin_pointer_pivot_x_right"
+                android:transformPivotY="@dimen/spin_pointer_pivot_y_right"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+    </FrameLayout>
+
+</RelativeLayout>

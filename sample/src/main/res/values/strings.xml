@@ -18,6 +18,7 @@
 
     <string name="app_name">Circle Menu</string>
     <!-- Main list items -->
+    <string name="wheel_sample">Wheel Menu (New)</string>
     <string name="main_sample">Sample Circle menu</string>
     <string name="main_no_rotation">No rotation</string>
     <string name="main_attributes">XML attributes</string>
