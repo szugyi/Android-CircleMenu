@@ -42,6 +42,7 @@ EventListeners
 * `OnItemSelectedListener` - If the `isRotating` attribute is set to true, then it is called when the view is rotated to the `firstChildPosition`. Otherwise it is called with the `OnItemClickListener` when the child is tapped.
 * `OnCenterClickListener` - Called when the center of the CircleLayout is tapped.
 * `OnRotationFinishedListener` -  If the `isRotating` attribute is set to true, then it is called when the rotation is finished, and passes the view which is on the `firstChildPosition`. Otherwise it is never called.
+* `OnScrollStart` - If the `isRotation` attribute is set to true , Called when user start rotate circle.
 
 Changelog
 ---------

@@ -58,6 +58,7 @@ public class CircleLayout extends ViewGroup {
     private OnItemSelectedListener onItemSelectedListener = null;
     private OnCenterClickListener onCenterClickListener = null;
     private OnRotationFinishedListener onRotationFinishedListener = null;
+    private OnScrollStart onScrollStart = null;
 
     // Sizes of the ViewGroup
     private int circleWidth, circleHeight;
@@ -379,6 +380,18 @@ public class CircleLayout extends ViewGroup {
         }
     }
 
+    /**
+     * This method help to animate second CircleLayout Selected Item to first CircleLayout Selected Item
+     *
+     * @param firstcircleLayout First Circle Layout that you neew second circle layout animate to that position
+     * @param duration animation duration
+     */
+    public void AnimateSecondToFirst(CircleLayout firstcircleLayout,long duration){
+
+        animateTo(firstcircleLayout.getAngle(),duration);
+    }
+
+
     private void animateTo(float endDegree, long duration) {
         if (animator != null && animator.isRunning() || Math.abs(angle - endDegree) < 1) {
             return;
@@ -431,7 +444,8 @@ public class CircleLayout extends ViewGroup {
     private double getPositionAngle(double xTouch, double yTouch) {
         double x = xTouch - (circleWidth / 2d);
         double y = circleHeight - yTouch - (circleHeight / 2d);
-
+        if(onScrollStart != null)
+            onScrollStart.OnScroll();
         switch (getPositionQuadrant(x, y)) {
             case 1:
                 return Math.asin(y / Math.hypot(x, y)) * 180 / Math.PI;
@@ -651,5 +665,11 @@ public class CircleLayout extends ViewGroup {
     public void setOnRotationFinishedListener(
             OnRotationFinishedListener onRotationFinishedListener) {
         this.onRotationFinishedListener = onRotationFinishedListener;
+    }
+    public interface OnScrollStart{
+        void OnScroll();
+    }
+    public void setOnScrollStart(OnScrollStart onScrollStart){
+        this.onScrollStart = onScrollStart;
     }
 }
